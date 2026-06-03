@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useAnalyzerStore } from "@/stores/useAnalyzerStore";
+import type { ResumeAnalysisResult } from "@/lib/llm/schemas";
 
 const checklistSteps = [
   "Parsing your resume...",
@@ -16,27 +17,56 @@ const checklistSteps = [
 
 export default function AnalyzerScanningPage() {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   const setIsScanning = useAnalyzerStore((state) => state.setIsScanning);
-  const setScore = useAnalyzerStore((state) => state.setScore);
-  const setFeedback = useAnalyzerStore((state) => state.setFeedback);
+  const setAnalysisResult = useAnalyzerStore((state) => state.setAnalysisResult);
+  const resumeText = useAnalyzerStore((state) => state.resumeText);
 
   useEffect(() => {
     setIsScanning(true);
-    const navigationTimeout = window.setTimeout(() => {
-      setScore(46);
-      setFeedback([
-        "ATS parse rate is critically low due to formatting and structure.",
-        "Several bullet points lack measurable business impact.",
-        "Fix section hierarchy to improve readability for screeners.",
-      ]);
-      setIsScanning(false);
-      router.push("/tools/analyzer/results");
-    }, 4000);
+
+    async function runAnalysis() {
+      try {
+        // Check if we have resume text
+        if (!resumeText || resumeText.trim().length === 0) {
+          throw new Error("No resume text found. Please upload a file again.");
+        }
+
+        const response = await fetch("/api/ai/analyzer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            resumeText: resumeText,
+            targetRole: undefined, // Optional: can be added later
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "Analysis failed");
+        }
+
+        const analysis = data.analysis as ResumeAnalysisResult;
+        setAnalysisResult(analysis);
+        setIsScanning(false);
+        router.push("/tools/analyzer/results");
+      } catch (e) {
+        console.error("Analysis error:", e);
+        setError(e instanceof Error ? e.message : "Analysis failed");
+        setIsScanning(false);
+      }
+    }
+
+    // Add slight delay for UX (show animation)
+    const timer = setTimeout(() => {
+      runAnalysis();
+    }, 2000);
 
     return () => {
-      window.clearTimeout(navigationTimeout);
+      clearTimeout(timer);
     };
-  }, [router, setFeedback, setIsScanning, setScore]);
+  }, [router, setIsScanning, setAnalysisResult, resumeText]);
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center p-6 bg-gradient-to-br from-teal-50 via-purple-50 to-slate-50 text-slate-900">
@@ -90,33 +120,41 @@ export default function AnalyzerScanningPage() {
               deep-dive recommendations.
             </p>
 
-            <div className="mt-8 space-y-3">
-              {checklistSteps.map((step, index) => (
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ x: 2 }}
-                  transition={{ delay: index * 0.45, duration: 0.35 }}
-                  className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 transition-colors duration-200 hover:bg-teal-50/60"
-                >
+            {error ? (
+              <div className="mt-8 rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3">
+                <p className="text-sm font-medium text-red-700">
+                  Analysis failed: {error}
+                </p>
+              </div>
+            ) : (
+              <div className="mt-8 space-y-3">
+                {checklistSteps.map((step, index) => (
                   <motion.div
-                    initial={{ scale: 0.8, opacity: 0.4 }}
-                    animate={{ scale: [0.95, 1.06, 1], opacity: 1 }}
-                    transition={{
-                      delay: index * 0.45 + 0.08,
-                      duration: 0.45,
-                      ease: "easeOut",
-                    }}
+                    key={step}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ x: 2 }}
+                    transition={{ delay: index * 0.45, duration: 0.35 }}
+                    className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 transition-colors duration-200 hover:bg-teal-50/60"
                   >
-                    <CheckCircle2 className="size-5 text-teal-600" aria-hidden />
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0.4 }}
+                      animate={{ scale: [0.95, 1.06, 1], opacity: 1 }}
+                      transition={{
+                        delay: index * 0.45 + 0.08,
+                        duration: 0.45,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <CheckCircle2 className="size-5 text-teal-600" aria-hidden />
+                    </motion.div>
+                    <span className="text-sm font-medium tracking-tight text-slate-700 sm:text-base">
+                      {step}
+                    </span>
                   </motion.div>
-                  <span className="text-sm font-medium tracking-tight text-slate-700 sm:text-base">
-                    {step}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

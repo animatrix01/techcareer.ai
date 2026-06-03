@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { CheckCircle2Icon, ChevronLeftIcon, ChevronRightIcon, SparklesIcon, Trash2Icon } from "lucide-react";
 
 import { SortableExperienceList } from "@/components/features/builder/sortable-experience-list";
@@ -22,6 +23,7 @@ const WIZARD_STEPS = [
 
 function ContactSection() {
   const fullName = useBuilderStore((s) => s.resume.basics.fullName);
+  const jobTitle = useBuilderStore((s) => s.resume.basics.jobTitle);
   const email = useBuilderStore((s) => s.resume.basics.email);
   const phone = useBuilderStore((s) => s.resume.basics.phone);
   const location = useBuilderStore((s) => s.resume.basics.location);
@@ -38,6 +40,16 @@ function ContactSection() {
           placeholder="Alex Rivera"
           className="bg-zinc-950/80"
           autoComplete="name"
+        />
+      </div>
+      <div className="space-y-1 sm:col-span-2">
+        <Label htmlFor="rb-jobTitle">Professional title</Label>
+        <Input
+          id="rb-jobTitle"
+          value={jobTitle}
+          onChange={(e) => updateBasics({ jobTitle: e.target.value })}
+          placeholder="e.g. Frontend Engineer"
+          className="bg-zinc-950/80"
         />
       </div>
       <div className="space-y-1 sm:col-span-2">
@@ -79,8 +91,47 @@ function ContactSection() {
 function SummarySection() {
   const summary = useBuilderStore((s) => s.resume.basics.summary);
   const updateBasics = useBuilderStore((s) => s.updateBasics);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleEnhance = async () => {
+    if (!summary.trim()) {
+      setError("Please write a summary first before enhancing");
+      return;
+    }
+
+    if (summary.trim().length < 5) {
+      setError("Summary is too short to enhance");
+      return;
+    }
+
+    setIsEnhancing(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/ai/enhance-summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentSummary: summary }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Failed to enhance summary");
+      }
+
+      updateBasics({ summary: data.result.enhanced_summary });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Enhancement failed";
+      setError(message);
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <Label htmlFor="rb-summary">Professional summary</Label>
       <Textarea
         id="rb-summary"
@@ -89,7 +140,25 @@ function SummarySection() {
         placeholder="Two crisp lines on what you build and the impact."
         rows={7}
         className="resize-y bg-zinc-950/80"
+        disabled={isEnhancing}
       />
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleEnhance}
+        disabled={isEnhancing || !summary.trim()}
+        className={cn(
+          "w-full border-indigo-400/30 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-200 transition-all hover:from-indigo-500/20 hover:to-purple-500/20 hover:border-indigo-400/50",
+          isEnhancing && "opacity-60 cursor-wait"
+        )}
+      >
+        <SparklesIcon className={cn("mr-2 size-4", isEnhancing && "animate-pulse")} />
+        {isEnhancing ? "Enhancing..." : "✨ Enhance with AI"}
+      </Button>
+      {error && (
+        <p className="text-xs text-rose-400">{error}</p>
+      )}
     </div>
   );
 }

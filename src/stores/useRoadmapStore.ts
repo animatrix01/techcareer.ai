@@ -2,19 +2,16 @@
 
 import { create } from "zustand";
 
-export interface RoadmapPhase {
-  id: number;
-  title: string;
-  duration: string;
-  description: string;
-  skills: string[];
-  actionItems: string[];
-}
+import type { RoadmapPhase } from "@/lib/llm/schemas";
+
+export type { RoadmapPhase };
 
 interface RoadmapStoreState {
   targetRole: string | null;
   currentSkills: string[];
   roadmapData: RoadmapPhase[] | null;
+  fullRoadmapResult: import("@/lib/llm/schemas").RoadmapGenerationResult | null;
+  savedRoadmapId: string | null;
 }
 
 interface RoadmapStoreActions {
@@ -22,6 +19,8 @@ interface RoadmapStoreActions {
   addSkill: (skill: string) => void;
   removeSkill: (skill: string) => void;
   setRoadmapData: (data: RoadmapPhase[] | null) => void;
+  setFullRoadmapResult: (result: import("@/lib/llm/schemas").RoadmapGenerationResult | null) => void;
+  setSavedRoadmapId: (id: string | null) => void;
   resetRoadmap: () => void;
 }
 
@@ -31,6 +30,8 @@ const initialState: RoadmapStoreState = {
   targetRole: null,
   currentSkills: [],
   roadmapData: null,
+  fullRoadmapResult: null,
+  savedRoadmapId: null,
 };
 
 export const useRoadmapStore = create<RoadmapStore>((set) => ({
@@ -42,18 +43,14 @@ export const useRoadmapStore = create<RoadmapStore>((set) => ({
       if (trimmedSkill.length === 0 || state.currentSkills.includes(trimmedSkill)) {
         return state;
       }
-
-      return {
-        currentSkills: [...state.currentSkills, trimmedSkill],
-      };
+      return { currentSkills: [...state.currentSkills, trimmedSkill] };
     }),
   removeSkill: (skill) =>
     set((state) => ({
       currentSkills: state.currentSkills.filter((existingSkill) => existingSkill !== skill),
     })),
   setRoadmapData: (data) => set({ roadmapData: data }),
-  resetRoadmap: () =>
-    set({
-      ...initialState,
-    }),
+  setFullRoadmapResult: (result) => set({ fullRoadmapResult: result }),
+  setSavedRoadmapId: (id) => set({ savedRoadmapId: id }),
+  resetRoadmap: () => set({ ...initialState }),
 }));

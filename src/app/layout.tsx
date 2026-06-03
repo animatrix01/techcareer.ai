@@ -38,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="light" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-background font-sans text-foreground antialiased`}
       >
         <ClerkProvider>

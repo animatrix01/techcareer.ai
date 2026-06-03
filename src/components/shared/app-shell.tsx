@@ -20,7 +20,7 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <>
-      <Navbar />
+      <Navbar isLanding={pathname === "/"} />
       <main className="flex-1">{children}</main>
       <Footer />
     </>

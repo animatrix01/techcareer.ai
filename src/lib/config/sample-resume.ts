@@ -1,0 +1,1082 @@
+﻿import type { ResumeBuilderData } from "@/stores/useBuilderStore";
+
+/** Sample resume data used for live template previews in the gallery. */
+export const SAMPLE_RESUME: ResumeBuilderData = {
+  basics: {
+    fullName: "Alex Rivera",
+    jobTitle: "Senior Software Engineer",
+    email: "alex@example.com",
+    phone: "+1 555 0123",
+    location: "San Francisco, CA",
+    summary:
+      "Experienced software engineer with 6+ years building scalable web applications. Passionate about clean architecture, developer experience, and shipping products users love.",
+  },
+  skills: "TypeScript, React, Node.js, PostgreSQL, AWS, Docker, GraphQL, System Design",
+  experience: [
+    {
+      id: "1",
+      company: "Acme Corp",
+      role: "Senior Software Engineer",
+      startDate: "2021-03",
+      endDate: "Present",
+      description:
+        "<ul><li>Led migration of monolith to microservices, reducing deploy time by 60%</li><li>Mentored 4 junior engineers and established code review standards</li></ul>",
+    },
+    {
+      id: "2",
+      company: "StartupXYZ",
+      role: "Full Stack Developer",
+      startDate: "2018-06",
+      endDate: "2021-02",
+      description:
+        "<ul><li>Built core product features used by 50k+ monthly active users</li><li>Improved API response time by 40% through query optimization</li></ul>",
+    },
+  ],
+  education: [
+    {
+      id: "1",
+      institution: "UC Berkeley",
+      degree: "B.S. Computer Science",
+      startDate: "2014-09",
+      endDate: "2018-05",
+    },
+  ],
+  projects: [
+    {
+      id: "1",
+      name: "OpenMetrics",
+      description: "Open-source observability platform with 2k+ GitHub stars",
+      url: "https://github.com",
+      stack: "Go, Prometheus, React",
+    },
+  ],
+};
+
+/** Diverse sample profiles for template previews - creates realistic marketplace feel */
+export const SAMPLE_PROFILES: Record<string, ResumeBuilderData> = {
+  modern: {
+    basics: {
+      fullName: "Ethan Walker",
+      jobTitle: "Product Designer",
+      email: "ethan.walker@email.com",
+      phone: "+1 555 0198",
+      location: "Austin, TX",
+      summary:
+        "Creative product designer with 5+ years crafting intuitive user experiences. Specialized in design systems, user research, and bridging the gap between design and engineering.",
+    },
+    skills: "Figma, UI/UX Design, Design Systems, Prototyping, User Research, HTML/CSS, React",
+    experience: [
+      {
+        id: "1",
+        company: "TechFlow Inc",
+        role: "Senior Product Designer",
+        startDate: "2021-01",
+        endDate: "Present",
+        description:
+          "<ul><li>Redesigned core product interface, increasing user engagement by 45%</li><li>Built comprehensive design system adopted across 8 product teams</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Digital Studios",
+        role: "UX Designer",
+        startDate: "2019-03",
+        endDate: "2020-12",
+        description:
+          "<ul><li>Conducted user research with 200+ participants to inform product decisions</li><li>Designed mobile-first experiences for 3 major client projects</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Rhode Island School of Design",
+        degree: "B.F.A. Graphic Design",
+        startDate: "2015-09",
+        endDate: "2019-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "DesignKit",
+        description: "Open-source component library with 5k+ weekly downloads",
+        url: "https://designkit.io",
+        stack: "React, Storybook, TypeScript",
+      },
+    ],
+  },
+
+  classic: {
+    basics: {
+      fullName: "Olivia Carter",
+      jobTitle: "Marketing Manager",
+      email: "olivia.carter@email.com",
+      phone: "+1 555 0234",
+      location: "Boston, MA",
+      summary:
+        "Results-driven marketing professional with 7+ years developing data-driven campaigns. Proven track record of increasing brand awareness and driving customer acquisition across B2B and B2C markets.",
+    },
+    skills: "Digital Marketing, SEO/SEM, Content Strategy, Analytics, Campaign Management, Social Media, Email Marketing",
+    experience: [
+      {
+        id: "1",
+        company: "GlobalTech Solutions",
+        role: "Marketing Manager",
+        startDate: "2020-06",
+        endDate: "Present",
+        description:
+          "<ul><li>Increased qualified leads by 85% through targeted content marketing strategy</li><li>Managed $500K annual marketing budget across multiple channels</li></ul>",
+      },
+      {
+        id: "2",
+        company: "BrightWave Media",
+        role: "Digital Marketing Specialist",
+        startDate: "2017-08",
+        endDate: "2020-05",
+        description:
+          "<ul><li>Grew organic traffic by 120% through SEO optimization and content creation</li><li>Launched successful email campaigns with 28% average open rate</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Boston University",
+        degree: "B.A. Marketing",
+        startDate: "2013-09",
+        endDate: "2017-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Brand Refresh Campaign",
+        description: "Led complete rebrand resulting in 40% increase in brand recognition",
+        url: "",
+        stack: "Strategy, Creative Direction, Analytics",
+      },
+    ],
+  },
+
+  executive: {
+    basics: {
+      fullName: "Daniel Brooks",
+      jobTitle: "Chief Technology Officer",
+      email: "daniel.brooks@email.com",
+      phone: "+1 555 0345",
+      location: "New York, NY",
+      summary:
+        "Strategic technology executive with 15+ years leading engineering organizations. Expertise in scaling teams, driving digital transformation, and aligning technology strategy with business objectives.",
+    },
+    skills: "Strategic Planning, Team Leadership, Cloud Architecture, Digital Transformation, Agile, Budget Management, Vendor Relations",
+    experience: [
+      {
+        id: "1",
+        company: "Enterprise Solutions Corp",
+        role: "Chief Technology Officer",
+        startDate: "2019-01",
+        endDate: "Present",
+        description:
+          "<ul><li>Lead 120+ person engineering organization across 6 global offices</li><li>Drove cloud migration saving $2M annually while improving system reliability</li></ul>",
+      },
+      {
+        id: "2",
+        company: "InnovateTech",
+        role: "VP of Engineering",
+        startDate: "2014-03",
+        endDate: "2018-12",
+        description:
+          "<ul><li>Scaled engineering team from 15 to 80 while maintaining high performance culture</li><li>Implemented DevOps practices reducing deployment time from weeks to hours</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "MIT",
+        degree: "M.S. Computer Science",
+        startDate: "2006-09",
+        endDate: "2008-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Digital Transformation Initiative",
+        description: "Led company-wide modernization of legacy systems and processes",
+        url: "",
+        stack: "Cloud Migration, Microservices, DevOps",
+      },
+    ],
+  },
+
+  innovator: {
+    basics: {
+      fullName: "Emma Collins",
+      jobTitle: "Product Manager",
+      email: "emma.collins@email.com",
+      phone: "+1 555 0456",
+      location: "Seattle, WA",
+      summary:
+        "Customer-focused product manager with 6+ years shipping innovative products. Skilled at translating user needs into product strategy and collaborating with cross-functional teams to deliver impact.",
+    },
+    skills: "Product Strategy, Roadmap Planning, User Stories, A/B Testing, Analytics, Stakeholder Management, Agile/Scrum",
+    experience: [
+      {
+        id: "1",
+        company: "CloudVentures",
+        role: "Senior Product Manager",
+        startDate: "2021-02",
+        endDate: "Present",
+        description:
+          "<ul><li>Launched 3 major features driving 30% increase in user retention</li><li>Led cross-functional team of 12 through complete product redesign</li></ul>",
+      },
+      {
+        id: "2",
+        company: "StartupHub",
+        role: "Product Manager",
+        startDate: "2018-07",
+        endDate: "2021-01",
+        description:
+          "<ul><li>Defined product vision and roadmap for B2B SaaS platform</li><li>Increased customer satisfaction score from 7.2 to 8.9 through user-centric improvements</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "University of Washington",
+        degree: "B.S. Business Administration",
+        startDate: "2014-09",
+        endDate: "2018-06",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Mobile App Launch",
+        description: "Led 0-to-1 mobile product achieving 50k downloads in first month",
+        url: "",
+        stack: "Product Strategy, User Research, Go-to-Market",
+      },
+    ],
+  },
+
+  minimalist: {
+    basics: {
+      fullName: "Nathan Reed",
+      jobTitle: "Data Scientist",
+      email: "nathan.reed@email.com",
+      phone: "+1 555 0567",
+      location: "Chicago, IL",
+      summary:
+        "Analytical data scientist with 5+ years extracting insights from complex datasets. Expertise in machine learning, statistical modeling, and translating data into actionable business recommendations.",
+    },
+    skills: "Python, R, SQL, Machine Learning, Statistical Analysis, Data Visualization, TensorFlow, Tableau",
+    experience: [
+      {
+        id: "1",
+        company: "DataCorp Analytics",
+        role: "Senior Data Scientist",
+        startDate: "2021-04",
+        endDate: "Present",
+        description:
+          "<ul><li>Built predictive models improving customer churn prediction accuracy by 35%</li><li>Developed automated reporting system saving 20 hours per week</li></ul>",
+      },
+      {
+        id: "2",
+        company: "FinTech Solutions",
+        role: "Data Analyst",
+        startDate: "2019-01",
+        endDate: "2021-03",
+        description:
+          "<ul><li>Analyzed user behavior data to identify $1.5M revenue opportunity</li><li>Created interactive dashboards used by executive team for strategic decisions</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Northwestern University",
+        degree: "M.S. Data Science",
+        startDate: "2017-09",
+        endDate: "2019-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Fraud Detection System",
+        description: "ML model detecting fraudulent transactions with 94% accuracy",
+        url: "",
+        stack: "Python, Scikit-learn, PostgreSQL",
+      },
+    ],
+  },
+
+  "ats-minimal": {
+    basics: {
+      fullName: "Sophia Bennett",
+      jobTitle: "Financial Analyst",
+      email: "sophia.bennett@email.com",
+      phone: "+1 555 0678",
+      location: "Charlotte, NC",
+      summary:
+        "Detail-oriented financial analyst with 4+ years providing data-driven insights for strategic decision-making. Strong background in financial modeling, forecasting, and variance analysis.",
+    },
+    skills: "Financial Modeling, Excel, SQL, Forecasting, Budgeting, Variance Analysis, PowerPoint, SAP",
+    experience: [
+      {
+        id: "1",
+        company: "Capital Finance Group",
+        role: "Financial Analyst",
+        startDate: "2020-08",
+        endDate: "Present",
+        description:
+          "<ul><li>Prepare monthly financial reports and variance analysis for executive leadership</li><li>Developed forecasting models improving budget accuracy by 25%</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Regional Bank Corp",
+        role: "Junior Financial Analyst",
+        startDate: "2019-06",
+        endDate: "2020-07",
+        description:
+          "<ul><li>Supported annual budgeting process for $50M operating budget</li><li>Automated reporting workflows reducing manual work by 15 hours monthly</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "University of North Carolina",
+        degree: "B.S. Finance",
+        startDate: "2015-09",
+        endDate: "2019-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Budget Optimization Model",
+        description: "Created Excel-based tool for department budget planning",
+        url: "",
+        stack: "Excel, VBA, Financial Modeling",
+      },
+    ],
+  },
+
+  "ats-compact": {
+    basics: {
+      fullName: "Ryan Mitchell",
+      jobTitle: "Operations Manager",
+      email: "ryan.mitchell@email.com",
+      phone: "+1 555 0789",
+      location: "Denver, CO",
+      summary:
+        "Process-driven operations manager with 6+ years optimizing workflows and leading teams. Proven ability to improve efficiency, reduce costs, and implement scalable operational systems.",
+    },
+    skills: "Operations Management, Process Improvement, Team Leadership, Logistics, Inventory Management, Lean Six Sigma, Project Management",
+    experience: [
+      {
+        id: "1",
+        company: "LogisticsPro",
+        role: "Operations Manager",
+        startDate: "2020-03",
+        endDate: "Present",
+        description:
+          "<ul><li>Manage daily operations for 50-person warehouse and distribution center</li><li>Reduced operational costs by 22% through process optimization initiatives</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Supply Chain Solutions",
+        role: "Operations Coordinator",
+        startDate: "2018-01",
+        endDate: "2020-02",
+        description:
+          "<ul><li>Coordinated logistics for 500+ daily shipments across 3 facilities</li><li>Implemented inventory tracking system reducing errors by 40%</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Colorado State University",
+        degree: "B.S. Business Management",
+        startDate: "2014-09",
+        endDate: "2018-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Warehouse Automation",
+        description: "Led implementation of automated picking system",
+        url: "",
+        stack: "Process Design, Vendor Management, Training",
+      },
+    ],
+  },
+
+  "startup-bold": {
+    basics: {
+      fullName: "Grace Turner",
+      jobTitle: "Growth Marketing Lead",
+      email: "grace.turner@email.com",
+      phone: "+1 555 0890",
+      location: "Los Angeles, CA",
+      summary:
+        "Growth-focused marketer with 5+ years driving user acquisition and retention for startups. Expert in growth hacking, viral loops, and building scalable marketing engines from scratch.",
+    },
+    skills: "Growth Marketing, A/B Testing, Viral Marketing, Analytics, SEO, Paid Acquisition, Conversion Optimization, SQL",
+    experience: [
+      {
+        id: "1",
+        company: "RocketShip Labs",
+        role: "Growth Marketing Lead",
+        startDate: "2021-05",
+        endDate: "Present",
+        description:
+          "<ul><li>Grew user base from 10k to 200k through viral referral program</li><li>Achieved 3.2 CAC payback period through optimized acquisition channels</li></ul>",
+      },
+      {
+        id: "2",
+        company: "StartupBoost",
+        role: "Growth Marketer",
+        startDate: "2019-02",
+        endDate: "2021-04",
+        description:
+          "<ul><li>Launched growth experiments resulting in 150% increase in signups</li><li>Built automated email sequences with 35% conversion rate</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "UCLA",
+        degree: "B.A. Communications",
+        startDate: "2015-09",
+        endDate: "2019-06",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Viral Referral System",
+        description: "Designed referral program generating 40% of new signups",
+        url: "",
+        stack: "Growth Strategy, Analytics, A/B Testing",
+      },
+    ],
+  },
+
+  "tech-focused": {
+    basics: {
+      fullName: "Liam Foster",
+      jobTitle: "DevOps Engineer",
+      email: "liam.foster@email.com",
+      phone: "+1 555 0901",
+      location: "Portland, OR",
+      summary:
+        "Infrastructure-focused DevOps engineer with 6+ years building reliable, scalable systems. Passionate about automation, observability, and empowering development teams with excellent tooling.",
+    },
+    skills: "Kubernetes, Docker, AWS, Terraform, CI/CD, Python, Monitoring, Linux, GitOps, Prometheus",
+    experience: [
+      {
+        id: "1",
+        company: "CloudScale Systems",
+        role: "Senior DevOps Engineer",
+        startDate: "2021-01",
+        endDate: "Present",
+        description:
+          "<ul><li>Architected Kubernetes infrastructure serving 10M+ daily requests</li><li>Reduced deployment time from 2 hours to 10 minutes through CI/CD automation</li></ul>",
+      },
+      {
+        id: "2",
+        company: "TechStack Inc",
+        role: "DevOps Engineer",
+        startDate: "2018-06",
+        endDate: "2020-12",
+        description:
+          "<ul><li>Implemented infrastructure-as-code reducing provisioning time by 80%</li><li>Built comprehensive monitoring system improving incident response time</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Oregon State University",
+        degree: "B.S. Computer Science",
+        startDate: "2014-09",
+        endDate: "2018-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "K8s Deployment Tool",
+        description: "Open-source CLI tool for simplified Kubernetes deployments",
+        url: "https://github.com",
+        stack: "Go, Kubernetes, Docker",
+      },
+    ],
+  },
+
+  "creative-sidebar": {
+    basics: {
+      fullName: "Hannah Cooper",
+      jobTitle: "Brand Designer",
+      email: "hannah.cooper@email.com",
+      phone: "+1 555 1012",
+      location: "Brooklyn, NY",
+      summary:
+        "Creative brand designer with 5+ years crafting memorable visual identities. Specialized in brand strategy, illustration, and creating cohesive design systems that tell compelling stories.",
+    },
+    skills: "Brand Design, Illustration, Adobe Creative Suite, Typography, Art Direction, Motion Graphics, Brand Strategy",
+    experience: [
+      {
+        id: "1",
+        company: "Studio Collective",
+        role: "Senior Brand Designer",
+        startDate: "2021-03",
+        endDate: "Present",
+        description:
+          "<ul><li>Led brand identity projects for 15+ clients across tech and lifestyle sectors</li><li>Created award-winning visual identity featured in Communication Arts</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Creative Agency NYC",
+        role: "Brand Designer",
+        startDate: "2019-01",
+        endDate: "2021-02",
+        description:
+          "<ul><li>Designed brand systems for 3 successful product launches</li><li>Collaborated with strategy team on brand positioning and messaging</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Parsons School of Design",
+        degree: "B.F.A. Communication Design",
+        startDate: "2015-09",
+        endDate: "2019-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Sustainable Brand Initiative",
+        description: "Complete rebrand for eco-friendly product line",
+        url: "",
+        stack: "Brand Strategy, Illustration, Packaging Design",
+      },
+    ],
+  },
+
+  "designer-split": {
+    basics: {
+      fullName: "Mason Parker",
+      jobTitle: "Frontend Engineer",
+      email: "mason.parker@email.com",
+      phone: "+1 555 1123",
+      location: "Miami, FL",
+      summary:
+        "Frontend engineer with 5+ years building performant, accessible web applications. Strong focus on user experience, modern JavaScript frameworks, and bridging design and development.",
+    },
+    skills: "React, TypeScript, Next.js, CSS/Tailwind, Accessibility, Performance, Testing, Git, Figma",
+    experience: [
+      {
+        id: "1",
+        company: "WebFlow Technologies",
+        role: "Senior Frontend Engineer",
+        startDate: "2021-06",
+        endDate: "Present",
+        description:
+          "<ul><li>Built component library used across 5 product teams</li><li>Improved Core Web Vitals scores by 40% through performance optimization</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Digital Products Co",
+        role: "Frontend Developer",
+        startDate: "2019-03",
+        endDate: "2021-05",
+        description:
+          "<ul><li>Developed responsive interfaces for mobile-first applications</li><li>Implemented accessibility standards achieving WCAG 2.1 AA compliance</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "University of Florida",
+        degree: "B.S. Computer Science",
+        startDate: "2015-09",
+        endDate: "2019-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "UI Component Library",
+        description: "Open-source React component library with 3k+ stars",
+        url: "https://github.com",
+        stack: "React, TypeScript, Storybook",
+      },
+    ],
+  },
+
+  "professional-clean": {
+    basics: {
+      fullName: "Chloe Adams",
+      jobTitle: "Management Consultant",
+      email: "chloe.adams@email.com",
+      phone: "+1 555 1234",
+      location: "Washington, DC",
+      summary:
+        "Strategic management consultant with 7+ years advising Fortune 500 clients on operational excellence and digital transformation. Expertise in change management, process optimization, and stakeholder engagement.",
+    },
+    skills: "Strategy Consulting, Change Management, Process Improvement, Stakeholder Management, Data Analysis, Presentation, Project Management",
+    experience: [
+      {
+        id: "1",
+        company: "Premier Consulting Group",
+        role: "Senior Consultant",
+        startDate: "2020-01",
+        endDate: "Present",
+        description:
+          "<ul><li>Lead consulting engagements for Fortune 500 clients across multiple industries</li><li>Delivered $5M in cost savings through operational efficiency initiatives</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Strategy Partners LLC",
+        role: "Consultant",
+        startDate: "2017-07",
+        endDate: "2019-12",
+        description:
+          "<ul><li>Conducted market analysis and competitive research for client strategy projects</li><li>Managed cross-functional teams of 8-12 stakeholders through change initiatives</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Georgetown University",
+        degree: "MBA",
+        startDate: "2015-09",
+        endDate: "2017-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Digital Transformation Program",
+        description: "Led enterprise-wide transformation for global manufacturing client",
+        url: "",
+        stack: "Strategy, Change Management, Process Design",
+      },
+    ],
+  },
+
+  "ats-elegant": {
+    basics: {
+      fullName: "Isabella Martinez",
+      jobTitle: "HR Business Partner",
+      email: "isabella.martinez@email.com",
+      phone: "+1 555 2345",
+      location: "Atlanta, GA",
+      summary:
+        "Strategic HR professional with 6+ years partnering with business leaders to drive organizational effectiveness. Expertise in talent acquisition, employee relations, and performance management.",
+    },
+    skills: "HR Strategy, Talent Acquisition, Employee Relations, Performance Management, HRIS, Compensation, Training & Development",
+    experience: [
+      {
+        id: "1",
+        company: "TechCorp Global",
+        role: "Senior HR Business Partner",
+        startDate: "2021-03",
+        endDate: "Present",
+        description:
+          "<ul><li>Partner with C-suite on workforce planning and organizational design</li><li>Reduced time-to-hire by 35% through process optimization</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Growth Industries",
+        role: "HR Generalist",
+        startDate: "2018-06",
+        endDate: "2021-02",
+        description:
+          "<ul><li>Managed full-cycle recruitment for 100+ positions annually</li><li>Implemented employee engagement program increasing retention by 20%</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Emory University",
+        degree: "B.A. Human Resources Management",
+        startDate: "2014-09",
+        endDate: "2018-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Diversity & Inclusion Initiative",
+        description: "Led company-wide D&I program impacting 500+ employees",
+        url: "",
+        stack: "Program Management, Training, Analytics",
+      },
+    ],
+  },
+
+  "gradient-pro": {
+    basics: {
+      fullName: "Marcus Johnson",
+      jobTitle: "Creative Director",
+      email: "marcus.johnson@email.com",
+      phone: "+1 555 3456",
+      location: "San Diego, CA",
+      summary:
+        "Award-winning creative director with 8+ years leading brand campaigns and creative teams. Passionate about storytelling, visual innovation, and creating work that drives business results.",
+    },
+    skills: "Creative Direction, Brand Strategy, Team Leadership, Campaign Development, Art Direction, Copywriting, Client Relations",
+    experience: [
+      {
+        id: "1",
+        company: "Visionary Agency",
+        role: "Creative Director",
+        startDate: "2020-09",
+        endDate: "Present",
+        description:
+          "<ul><li>Lead creative team of 15 across multiple high-profile brand campaigns</li><li>Directed award-winning campaign generating 50M+ impressions</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Brand Collective",
+        role: "Senior Art Director",
+        startDate: "2016-04",
+        endDate: "2020-08",
+        description:
+          "<ul><li>Conceptualized and executed integrated campaigns for Fortune 500 clients</li><li>Mentored junior designers and established creative standards</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Art Center College of Design",
+        degree: "B.F.A. Advertising",
+        startDate: "2012-09",
+        endDate: "2016-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Rebrand Campaign 2023",
+        description: "Complete brand refresh for national retail chain",
+        url: "",
+        stack: "Brand Strategy, Creative Direction, Campaign",
+      },
+    ],
+  },
+
+  "executive-luxe": {
+    basics: {
+      fullName: "Victoria Chen",
+      jobTitle: "Chief Operating Officer",
+      email: "victoria.chen@email.com",
+      phone: "+1 555 4567",
+      location: "San Francisco, CA",
+      summary:
+        "Results-driven executive with 18+ years optimizing operations and scaling organizations. Proven track record of driving operational excellence, building high-performing teams, and delivering sustainable growth.",
+    },
+    skills: "Operations Strategy, P&L Management, Process Optimization, Team Building, Strategic Planning, Supply Chain, Risk Management",
+    experience: [
+      {
+        id: "1",
+        company: "ScaleUp Technologies",
+        role: "Chief Operating Officer",
+        startDate: "2018-06",
+        endDate: "Present",
+        description:
+          "<ul><li>Oversee operations for $200M revenue SaaS company with 300+ employees</li><li>Improved operational efficiency by 40% while scaling team 3x</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Enterprise Solutions Inc",
+        role: "VP of Operations",
+        startDate: "2012-03",
+        endDate: "2018-05",
+        description:
+          "<ul><li>Led operational transformation reducing costs by $8M annually</li><li>Built and managed operations team across 4 global offices</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Stanford GSB",
+        degree: "MBA",
+        startDate: "2010-09",
+        endDate: "2012-06",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Global Expansion Initiative",
+        description: "Led international expansion into 5 new markets",
+        url: "",
+        stack: "Strategy, Operations, Market Entry",
+      },
+    ],
+  },
+
+  "creative-portfolio": {
+    basics: {
+      fullName: "Jasper Williams",
+      jobTitle: "Motion Designer",
+      email: "jasper.williams@email.com",
+      phone: "+1 555 5678",
+      location: "Nashville, TN",
+      summary:
+        "Creative motion designer with 5+ years crafting engaging animations and visual experiences. Specialized in brand motion, explainer videos, and bringing stories to life through movement.",
+    },
+    skills: "After Effects, Cinema 4D, Premiere Pro, Illustration, Animation, Storyboarding, Sound Design",
+    experience: [
+      {
+        id: "1",
+        company: "Motion Studios",
+        role: "Senior Motion Designer",
+        startDate: "2021-07",
+        endDate: "Present",
+        description:
+          "<ul><li>Create motion graphics for major brand campaigns and product launches</li><li>Directed animated explainer series with 2M+ views</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Creative House",
+        role: "Motion Designer",
+        startDate: "2019-02",
+        endDate: "2021-06",
+        description:
+          "<ul><li>Produced motion content for social media and digital advertising</li><li>Collaborated with creative team on integrated campaigns</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Savannah College of Art and Design",
+        degree: "B.F.A. Motion Media Design",
+        startDate: "2015-09",
+        endDate: "2019-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Brand Motion System",
+        description: "Developed comprehensive motion language for tech startup",
+        url: "",
+        stack: "After Effects, Cinema 4D, Brand Design",
+      },
+    ],
+  },
+
+  "developer-dark": {
+    basics: {
+      fullName: "Alex Nakamura",
+      jobTitle: "Backend Engineer",
+      email: "alex.nakamura@email.com",
+      phone: "+1 555 6789",
+      location: "Seattle, WA",
+      summary:
+        "Backend engineer with 6+ years building scalable distributed systems. Passionate about clean architecture, performance optimization, and solving complex technical challenges.",
+    },
+    skills: "Go, Python, PostgreSQL, Redis, Kubernetes, gRPC, Microservices, System Design, AWS",
+    experience: [
+      {
+        id: "1",
+        company: "CloudScale",
+        role: "Senior Backend Engineer",
+        startDate: "2021-04",
+        endDate: "Present",
+        description:
+          "<ul><li>Architect and build microservices handling 100M+ requests daily</li><li>Reduced API latency by 60% through caching and optimization</li></ul>",
+      },
+      {
+        id: "2",
+        company: "DataFlow Systems",
+        role: "Backend Engineer",
+        startDate: "2018-07",
+        endDate: "2021-03",
+        description:
+          "<ul><li>Built real-time data processing pipeline handling 1TB+ daily</li><li>Implemented monitoring system reducing incident response time by 70%</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "University of Washington",
+        degree: "B.S. Computer Science",
+        startDate: "2014-09",
+        endDate: "2018-06",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "DistributedCache",
+        description: "Open-source distributed caching library with 4k+ stars",
+        url: "https://github.com",
+        stack: "Go, Redis, Docker",
+      },
+    ],
+  },
+
+  "fresher-edge": {
+    basics: {
+      fullName: "Aisha Patel",
+      jobTitle: "Computer Science Graduate",
+      email: "aisha.patel@email.com",
+      phone: "+1 555 7890",
+      location: "Austin, TX",
+      summary:
+        "Recent computer science graduate with strong foundation in software development and passion for building user-centric applications. Eager to contribute technical skills and fresh perspective to innovative team.",
+    },
+    skills: "Java, Python, JavaScript, React, SQL, Git, Agile, Problem Solving",
+    experience: [
+      {
+        id: "1",
+        company: "Tech Startup Inc",
+        role: "Software Engineering Intern",
+        startDate: "2023-06",
+        endDate: "2023-08",
+        description:
+          "<ul><li>Developed features for web application used by 10k+ users</li><li>Collaborated with team using Agile methodology and Git workflow</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "University of Texas at Austin",
+        degree: "B.S. Computer Science",
+        startDate: "2020-09",
+        endDate: "2024-05",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Campus Event Platform",
+        description: "Full-stack web app for university event management",
+        url: "",
+        stack: "React, Node.js, MongoDB",
+      },
+      {
+        id: "2",
+        name: "AI Study Assistant",
+        description: "Machine learning project for personalized study recommendations",
+        url: "",
+        stack: "Python, TensorFlow, Flask",
+      },
+    ],
+  },
+
+  "consultant-pro": {
+    basics: {
+      fullName: "Benjamin Foster",
+      jobTitle: "Strategy Consultant",
+      email: "benjamin.foster@email.com",
+      phone: "+1 555 8901",
+      location: "Chicago, IL",
+      summary:
+        "Strategy consultant with 6+ years advising C-suite executives on growth strategy and market entry. Track record of delivering actionable insights that drive measurable business impact.",
+    },
+    skills: "Strategic Planning, Market Analysis, Financial Modeling, Stakeholder Management, Due Diligence, Presentation, Excel",
+    experience: [
+      {
+        id: "1",
+        company: "McKinley Consulting",
+        role: "Senior Consultant",
+        startDate: "2021-01",
+        endDate: "Present",
+        description:
+          "<ul><li>Lead strategy engagements for Fortune 500 clients across industries</li><li>Developed market entry strategy resulting in $50M revenue opportunity</li></ul>",
+      },
+      {
+        id: "2",
+        company: "Apex Advisory",
+        role: "Consultant",
+        startDate: "2018-08",
+        endDate: "2020-12",
+        description:
+          "<ul><li>Conducted competitive analysis and market research for growth initiatives</li><li>Supported M&A due diligence for $200M+ transactions</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "University of Chicago Booth",
+        degree: "MBA",
+        startDate: "2016-09",
+        endDate: "2018-06",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "Market Expansion Study",
+        description: "Led analysis for client's entry into emerging markets",
+        url: "",
+        stack: "Strategy, Market Research, Financial Analysis",
+      },
+    ],
+  },
+
+  "founder-resume": {
+    basics: {
+      fullName: "Jordan Blake",
+      jobTitle: "Founder & CEO",
+      email: "jordan.blake@email.com",
+      phone: "+1 555 9012",
+      location: "San Francisco, CA",
+      summary:
+        "Serial entrepreneur with 8+ years building and scaling technology companies. Passionate about solving real problems, building exceptional teams, and creating products people love.",
+    },
+    skills: "Product Strategy, Fundraising, Team Building, Go-to-Market, Growth, Leadership, Vision",
+    experience: [
+      {
+        id: "1",
+        company: "BuildFast AI",
+        role: "Founder & CEO",
+        startDate: "2021-03",
+        endDate: "Present",
+        description:
+          "<ul><li>Founded AI-powered productivity platform, grew to 50k+ users</li><li>Raised $3M seed round from top-tier VCs</li><li>Built team of 15 across product, engineering, and growth</li></ul>",
+      },
+      {
+        id: "2",
+        company: "DataFlow (Acquired)",
+        role: "Co-Founder & CTO",
+        startDate: "2017-06",
+        endDate: "2021-02",
+        description:
+          "<ul><li>Co-founded analytics startup, scaled to $2M ARR</li><li>Successfully acquired by enterprise software company</li></ul>",
+      },
+    ],
+    education: [
+      {
+        id: "1",
+        institution: "Stanford University",
+        degree: "B.S. Computer Science",
+        startDate: "2013-09",
+        endDate: "2017-06",
+      },
+    ],
+    projects: [
+      {
+        id: "1",
+        name: "BuildFast AI",
+        description: "AI productivity platform with 50k+ users and $3M funding",
+        url: "https://buildfast.ai",
+        stack: "Product, AI/ML, SaaS",
+      },
+      {
+        id: "2",
+        name: "DataFlow Analytics",
+        description: "Analytics platform acquired after reaching $2M ARR",
+        url: "",
+        stack: "Analytics, B2B SaaS, Growth",
+      },
+    ],
+  },
+};
+

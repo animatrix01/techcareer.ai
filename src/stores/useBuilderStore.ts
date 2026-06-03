@@ -8,11 +8,28 @@ export type BuilderTemplateId =
   | "classic"
   | "executive"
   | "innovator"
-  | "minimalist";
+  | "minimalist"
+  | "ats-minimal"
+  | "ats-compact"
+  | "startup-bold"
+  | "creative-sidebar"
+  | "professional-clean"
+  | "tech-focused"
+  | "designer-split"
+  | "ats-elegant"
+  | "gradient-pro"
+  | "executive-luxe"
+  | "creative-portfolio"
+  | "developer-dark"
+  | "fresher-edge"
+  | "consultant-pro"
+  | "founder-resume";
 
 export type ResumeBuilderData = {
   basics: {
     fullName: string;
+    /** Shown under name in modern template (e.g. Frontend Engineer) */
+    jobTitle: string;
     email: string;
     phone: string;
     location: string;
@@ -91,6 +108,7 @@ const newId = () =>
 const initialResumeState: ResumeBuilderData = {
   basics: {
     fullName: "",
+    jobTitle: "",
     email: "",
     phone: "",
     location: "",
@@ -108,7 +126,7 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
   currentStep: 0,
   design: {
     template: "modern",
-    themeColor: "#14b8a6",
+    themeColor: "#1a2e35",
   },
   setResume: (resume) =>
     set({
@@ -273,7 +291,7 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
       currentStep: 0,
       design: {
         template: "modern",
-        themeColor: "#14b8a6",
+        themeColor: "#1a2e35",
       },
     }),
 }));

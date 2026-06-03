@@ -65,9 +65,12 @@ function SortableExperienceCard({ id }: { id: string }) {
 
   function handleSuggestBullets() {
     if (isSuggesting) return;
+    const current = exp;
+    if (!current) return;
     setIsSuggesting(true);
+    const prior = current.description;
     setTimeout(() => {
-      updateExperience(id, { description: appendBullets(exp.description) });
+      updateExperience(id, { description: appendBullets(prior) });
       setIsSuggesting(false);
     }, 2000);
   }

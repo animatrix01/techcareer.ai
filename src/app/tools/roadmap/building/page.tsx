@@ -1,85 +1,102 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import type { RoadmapGenerationResult } from "@/lib/llm/schemas";
 import { useRoadmapStore } from "@/stores/useRoadmapStore";
+import { saveRoadmap } from "@/actions/roadmap";
 
-const mockRoadmapPhases = [
-  {
-    id: 1,
-    title: "Fundamentals",
-    duration: "6-8 Weeks",
-    description:
-      "Build a rock-solid programming base with data structures, clean coding habits, and day-to-day engineering workflows used in modern product teams.",
-    skills: [
-      "Problem solving with arrays, strings, hash maps, and recursion",
-      "Version control workflows with Git, pull requests, and code reviews",
-      "Core JavaScript or Python syntax fluency and debugging techniques",
-      "HTTP fundamentals, REST APIs, and client-server communication",
-      "Writing maintainable code with naming, modularity, and refactoring",
-    ],
-    actionItems: [
-      "Complete 35 algorithm practice problems focused on core patterns and track solutions in a personal knowledge log",
-      "Build two mini-projects: a task manager API and a responsive dashboard UI, then document architecture decisions",
-      "Set up linting, formatting, and pre-commit hooks in both projects to adopt production engineering standards early",
-      "Pair with a peer weekly to simulate pull-request reviews and improve communication around technical trade-offs",
-    ],
-  },
-  {
-    id: 2,
-    title: "Core Engineering",
-    duration: "8-10 Weeks",
-    description:
-      "Develop full-stack execution skills by shipping features end-to-end, improving performance, and adding reliability through testing and observability.",
-    skills: [
-      "Designing relational schemas, indexes, and efficient queries",
-      "Authentication and authorization patterns for web applications",
-      "State management and component architecture in a frontend framework",
-      "Unit, integration, and API testing with clear coverage goals",
-      "Monitoring latency, errors, and throughput with actionable metrics",
-    ],
-    actionItems: [
-      "Ship a feature-complete product module with login, profile management, and role-based permissions",
-      "Add test suites that reach at least 70% meaningful coverage across domain logic and critical API paths",
-      "Run a performance pass using browser and server profiling tools to cut a slow request by 30% or more",
-      "Instrument logs and metrics dashboards, then define alert thresholds for key backend endpoints",
-    ],
-  },
-  {
-    id: 3,
-    title: "Advanced Delivery",
-    duration: "10-12 Weeks",
-    description:
-      "Operate like a mid-level software engineer by designing scalable systems, collaborating cross-functionally, and delivering production-ready solutions.",
-    skills: [
-      "System design for scalability, caching, and horizontal growth",
-      "Asynchronous processing with queues, workers, and retry strategies",
-      "CI/CD pipelines, deployment safety checks, and rollback planning",
-      "Security best practices including secret management and threat modeling",
-      "Technical storytelling through architecture docs and stakeholder demos",
-    ],
-    actionItems: [
-      "Design and implement one capstone architecture that handles 10x traffic growth assumptions with a clear bottleneck analysis",
-      "Set up a CI/CD pipeline with automated tests, staged deployments, and post-deploy health verification steps",
-      "Write an engineering design document that explains trade-offs, alternatives rejected, and operational risks",
-      "Deliver a project demo to peers or mentors focused on impact metrics, technical depth, and future iterations",
-    ],
-  },
-];
+type ApiSuccess = { ok: true; roadmap: RoadmapGenerationResult };
+type ApiError = { ok: false; error: string; code?: string };
 
 export default function RoadmapBuildingPage() {
   const router = useRouter();
-  const setRoadmapData = useRoadmapStore((state) => state.setRoadmapData);
+  const targetRole = useRoadmapStore((s) => s.targetRole);
+  const currentSkills = useRoadmapStore((s) => s.currentSkills);
+  const setRoadmapData = useRoadmapStore((s) => s.setRoadmapData);
+  const setFullRoadmapResult = useRoadmapStore((s) => s.setFullRoadmapResult);
+  const setSavedRoadmapId = useRoadmapStore((s) => s.setSavedRoadmapId);
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setRoadmapData(mockRoadmapPhases);
-      router.push("/tools/roadmap/path");
-    }, 3000);
+    const role = targetRole?.trim() ?? "";
+    const skills = currentSkills.filter((s) => s.trim().length > 0);
 
-    return () => window.clearTimeout(timer);
-  }, []);
+    if (!role) {
+      router.replace("/tools/roadmap");
+      return;
+    }
+
+    const ac = new AbortController();
+    let cancelled = false;
+
+    async function run() {
+      setError(null);
+      try {
+        const res = await fetch("/api/ai/roadmap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ targetRole: role, currentSkills: skills }),
+          signal: ac.signal,
+        });
+
+        const payload = (await res.json()) as ApiSuccess | ApiError;
+        if (cancelled) return;
+
+        if (!res.ok || !payload || payload.ok !== true) {
+          setError((payload as ApiError)?.error ?? `Request failed (${res.status})`);
+          return;
+        }
+
+        const result = payload.roadmap;
+
+        // Store full result and phases
+        setFullRoadmapResult(result);
+        setRoadmapData(result.phases);
+
+        // Auto-save to DB after successful generation
+        try {
+          const savedId = await saveRoadmap({
+            targetRole: role,
+            currentSkills: skills,
+            roadmapData: result,
+          });
+          setSavedRoadmapId(savedId);
+          router.push(`/tools/roadmap/path?id=${savedId}`);
+        } catch (saveErr) {
+          // Save failed — log and still navigate without id
+          console.error("Failed to save roadmap to DB:", saveErr);
+          router.push("/tools/roadmap/path");
+        }
+      } catch (e) {
+        if (cancelled || (e instanceof DOMException && e.name === "AbortError")) return;
+        setError(e instanceof Error ? e.message : "Something went wrong");
+      }
+    }
+
+    void run();
+    return () => { cancelled = true; ac.abort(); };
+  }, [targetRole, currentSkills, router, setRoadmapData, setFullRoadmapResult, setSavedRoadmapId]);
+
+  if (error) {
+    return (
+      <main className="min-h-screen w-full flex items-center justify-center p-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-slate-900">
+        <section className="flex w-full max-w-lg flex-col items-center gap-6 rounded-3xl border border-rose-100/80 bg-white/90 px-8 py-12 text-center shadow-xl shadow-rose-100/40 backdrop-blur-sm">
+          <p className="text-lg font-semibold text-slate-900">Could not generate roadmap</p>
+          <p className="text-sm text-slate-600">{error}</p>
+          <button
+            type="button"
+            onClick={() => router.push("/tools/roadmap")}
+            className="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-500"
+          >
+            Back to planner
+          </button>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center p-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-slate-900">
@@ -89,9 +106,10 @@ export default function RoadmapBuildingPage() {
           <span className="absolute inline-flex size-20 animate-pulse rounded-full bg-purple-300/50" />
           <span className="relative inline-flex size-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent shadow-lg shadow-indigo-300/60" />
         </div>
-
         <p className="max-w-xl text-lg font-medium text-slate-700 sm:text-xl">
-          Analyzing market demands and structuring your path...
+          {currentSkills.length === 0 
+            ? "Crafting your beginner-friendly learning path..."
+            : "Analyzing market demands and structuring your path..."}
         </p>
       </section>
     </main>
