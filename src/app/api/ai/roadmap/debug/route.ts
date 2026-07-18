@@ -2,13 +2,23 @@ import { NextResponse } from "next/server";
 
 /**
  * Dev-only: confirms whether the server process sees a Groq key (no secret values returned).
- * If keyLength is 0 here but you have GROQ_API_KEY in .env.local, a shell/system env is likely overriding.
+ * Blocked in all non-development environments.
  */
 export const runtime = "nodejs";
 
 export async function GET() {
-  if (process.env.NODE_ENV === "production") {
+  // Double-gate: block on anything that isn't explicitly "development"
+  if (process.env.NODE_ENV !== "development") {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // Also require a local dev secret so this can't be hit even in dev accidentally
+  const devToken = process.env.DEBUG_TOKEN;
+  if (!devToken) {
+    return NextResponse.json(
+      { error: "Set DEBUG_TOKEN in .env.local to use this endpoint" },
+      { status: 403 }
+    );
   }
 
   const raw = process.env.GROQ_API_KEY;
@@ -20,9 +30,7 @@ export async function GET() {
       ? trimmed.slice(1, -1).trim()
       : trimmed;
 
-  const passesFormat = key
-    ? /^gsk_[A-Za-z0-9_-]+$/.test(key)
-    : false;
+  const passesFormat = key ? /^gsk_[A-Za-z0-9_-]+$/.test(key) : false;
 
   return NextResponse.json({
     keyPresent: Boolean(key && key.length > 0),
@@ -32,7 +40,6 @@ export async function GET() {
     overrideHint:
       "Next.js does not override process.env keys already set by your OS or terminal. " +
       "If .env.local is correct but you still get 401, run in PowerShell before npm run dev: " +
-      "Remove-Item Env:GROQ_API_KEY -ErrorAction SilentlyContinue; " +
-      "Also check Windows Settings → System → About → Advanced system settings → Environment Variables.",
+      "Remove-Item Env:GROQ_API_KEY -ErrorAction SilentlyContinue",
   });
 }

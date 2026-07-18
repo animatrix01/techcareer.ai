@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 import { generateRoadmap, RoadmapGenerationError } from "@/lib/ai/roadmap-generator";
 import { roadmapApiRequestSchema } from "@/lib/llm/schemas";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
+  const limited = await checkRateLimit("roadmap", userId);
+  if (limited) return limited;
+
   let json: unknown;
   try {
     json = await request.json();

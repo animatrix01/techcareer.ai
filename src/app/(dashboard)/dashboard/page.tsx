@@ -1,6 +1,6 @@
-import { UserButton } from "@clerk/nextjs";
 import { MapIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { getUserResumes } from "@/actions/resume";
 import { getUserRoadmaps } from "@/actions/roadmap";
@@ -39,35 +39,37 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EFE9E1]">
-      {/* Retro grid background */}
-      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
-        <div
-          className="absolute inset-0 opacity-[0.15]"
-          style={{ 
-            backgroundImage: "linear-gradient(#D4C5B3 1px, transparent 1px), linear-gradient(90deg, #D4C5B3 1px, transparent 1px)",
-            backgroundSize: "48px 48px"
-          }}
-        />
-      </div>
-
-      <header className="border-b-2 border-[#1C1C1C] bg-[#F5F1EB]">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <p className="text-lg font-bold tracking-tight text-[#1C1C1C]" style={{ fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' }}>
-            TechCareer OS
-          </p>
-          <UserButton />
+    <div className="min-h-screen">
+      <header className="border-b border-border/40 bg-paper/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 w-full max-w-[1180px] items-center justify-between px-6">
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/next career logo only.png"
+              alt="NextCareer logo"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
+            <span className="font-semibold text-lg tracking-tight text-ink">
+              NextCareer AI
+            </span>
+          </Link>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12 space-y-14">
+      <main className="mx-auto w-full max-w-[1180px] px-6 py-16 space-y-20">
 
         {/* ── My Resumes ── */}
         <section>
-          <h1 className="text-3xl font-black tracking-tight text-[#1C1C1C] sm:text-4xl" style={{ fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' }}>
-            My Resumes
-          </h1>
-          <p className="mt-2 text-base font-medium text-[#5C4F3F]">Create, manage, and download your AI-powered resumes</p>
+          <div className="mb-10">
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+              Dashboard
+            </div>
+            <h1 className="mt-3 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink">
+              My Resumes
+            </h1>
+            <p className="mt-3 text-muted-foreground">Create, manage, and download your AI-powered resumes</p>
+          </div>
 
           <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             <CreateResumeButton />
@@ -87,35 +89,44 @@ export default async function DashboardPage() {
 
         {/* ── Recent Roadmaps ── */}
         <section>
-          <div className="flex items-center justify-between">
+          <div className="flex items-end justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-[#1C1C1C] sm:text-3xl" style={{ fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' }}>
+              <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                Career Paths
+              </div>
+              <h2 className="mt-3 font-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] text-ink">
                 Recent Roadmaps
               </h2>
-              <p className="mt-1 text-base font-medium text-[#5C4F3F]">Your saved career roadmaps</p>
+              <p className="mt-2 text-muted-foreground">Your saved career roadmaps</p>
             </div>
             <Link
               href="/tools/roadmap"
-              className="rounded-sm border-2 border-[#1C1C1C] bg-[#2F5233] px-4 py-2 text-sm font-bold text-[#EFE9E1] shadow-[4px_4px_0px_0px_rgba(28,28,28,0.25)] transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(28,28,28,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+              className="btn-primary shrink-0"
             >
               + New Roadmap
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M13 5l7 7-7 7"/>
+              </svg>
             </Link>
           </div>
 
           {roadmapList.length === 0 ? (
-            <div className="mt-8 flex min-h-[160px] flex-col items-center justify-center rounded-sm border-2 border-dashed border-[#1C1C1C] bg-white text-center p-8">
-              <MapIcon className="mb-3 size-8 text-[#D4C5B3]" />
-              <p className="text-sm font-bold text-[#5C4F3F]">No roadmaps yet</p>
-              <p className="mt-1 text-xs text-[#6B5944]">Generate your first career roadmap to see it here</p>
+            <div className="mt-8 tile flex min-h-[200px] flex-col items-center justify-center text-center p-12">
+              <MapIcon className="mb-4 size-10 text-muted-foreground/40" />
+              <p className="text-sm font-semibold text-ink">No roadmaps yet</p>
+              <p className="mt-2 text-sm text-muted-foreground">Generate your first career roadmap to see it here</p>
               <Link
                 href="/tools/roadmap"
-                className="mt-4 rounded-sm border-2 border-[#1C1C1C] bg-[#2F5233] px-4 py-2 text-xs font-bold text-[#EFE9E1] shadow-[4px_4px_0px_0px_rgba(28,28,28,0.25)] transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(28,28,28,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                className="mt-6 btn-primary"
               >
                 Generate Roadmap
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M13 5l7 7-7 7"/>
+                </svg>
               </Link>
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
               {roadmapList.map((roadmap) => (
                 <RoadmapCard
                   key={roadmap.id}
