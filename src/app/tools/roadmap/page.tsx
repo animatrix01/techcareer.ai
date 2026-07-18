@@ -136,89 +136,34 @@ export default function RoadmapInputPage() {
   };
 
   return (
-    <main className="w-full overflow-x-hidden bg-white text-slate-900">
+    <main className="w-full overflow-x-hidden">
 
       {/* ════════════════════════════════════════════════════════════════════
           HERO
       ════════════════════════════════════════════════════════════════════ */}
-      <section className="relative flex min-h-[90vh] items-center overflow-hidden bg-gradient-to-br from-slate-50 via-violet-50/50 to-blue-50/30">
-        {/* Enhanced atmospheric background */}
-        <motion.div
-          className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-violet-200/40 via-violet-300/30 to-blue-200/20 blur-3xl"
-          animate={{ 
-            scale: [1, 1.1, 1], 
-            opacity: [0.4, 0.7, 0.4],
-            rotate: [0, 10, 0]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="pointer-events-none absolute -bottom-20 -right-20 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-blue-200/30 via-teal-200/25 to-cyan-200/20 blur-3xl"
-          animate={{ 
-            scale: [1, 1.08, 1], 
-            opacity: [0.3, 0.6, 0.3],
-            rotate: [0, -8, 0]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        />
-        <motion.div
-          className="pointer-events-none absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-teal-200/25 via-blue-200/20 to-violet-200/15 blur-3xl"
-          animate={{ 
-            scale: [1, 1.15, 1], 
-            opacity: [0.2, 0.5, 0.2],
-            rotate: [0, 15, 0]
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 6 }}
-        />
-        
-        {/* Subtle mesh gradient overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
-        
-        {/* Floating light particles */}
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="pointer-events-none absolute w-1 h-1 rounded-full bg-gradient-to-r from-violet-400/60 to-blue-400/60 blur-[0.5px]"
-            animate={{
-              y: [0, -30, 0],
-              x: [0, Math.sin(i) * 20, 0],
-              opacity: [0, 0.8, 0],
-              scale: [0.5, 1, 0.5]
-            }}
-            transition={{
-              duration: 8 + i * 0.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 1.2
-            }}
-            style={{
-              left: `${10 + (i * 10)}%`,
-              top: `${20 + (i * 8)}%`
-            }}
-          />
-        ))}
+      <section className="relative flex min-h-[90vh] items-center overflow-hidden py-24 lg:py-32">
 
-        <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-12 px-6 py-24 lg:grid-cols-2 lg:items-center">
+        <div className="relative mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-12 px-6 lg:grid-cols-2 lg:items-center">
           {/* Left: headline */}
           <div>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE }}
-              className="inline-flex items-center gap-2 rounded-full border border-violet-200/60 bg-violet-50 px-4 py-1.5 text-xs font-semibold text-violet-700"
+              className="inline-flex items-center gap-2 rounded-full bg-indigo/10 border border-indigo/20 px-4 py-1.5 text-xs font-medium text-indigo"
             >
               <Sparkles className="h-3 w-3" />
-              AI-Powered Career Navigation
+              AI-POWERED CAREER NAVIGATION
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
-              className="mt-5 text-balance text-5xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl"
+              className="mt-5 font-serif text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.05] tracking-tight text-ink"
             >
               Stop guessing.{" "}
-              <span className="bg-gradient-to-r from-violet-600 via-blue-600 to-teal-500 bg-clip-text text-transparent">
+              <span className="text-indigo">
                 Start mapping.
               </span>
             </motion.h1>
@@ -227,7 +172,7 @@ export default function RoadmapInputPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-              className="mt-6 max-w-lg text-lg leading-relaxed text-slate-500"
+              className="mt-6 max-w-lg text-lg text-muted-foreground"
             >
               Too many tutorials. Too little direction. Our AI builds a
               personalized, skill-ordered roadmap so you always know exactly
@@ -243,7 +188,7 @@ export default function RoadmapInputPage() {
               <button
                 type="button"
                 onClick={scrollToForm}
-                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-200/60 transition hover:brightness-105 hover:shadow-violet-300/60 active:scale-[0.98]"
+                className="btn-primary"
               >
                 Build My Roadmap
                 <ArrowRight className="h-4 w-4" />
@@ -251,7 +196,7 @@ export default function RoadmapInputPage() {
               <button
                 type="button"
                 onClick={scrollToForm}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 transition hover:text-slate-700"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition hover:text-ink"
               >
                 See the journey
                 <ChevronDown className="h-4 w-4" />
@@ -263,11 +208,11 @@ export default function RoadmapInputPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="mt-10 flex flex-wrap gap-5 text-xs text-slate-400"
+              className="mt-10 flex flex-wrap gap-5 text-xs text-muted-foreground"
             >
               {["Personalized to your level", "Skill-ordered by AI", "Free to generate"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-teal-500" />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-mint" />
                   {t}
                 </span>
               ))}
@@ -475,13 +420,7 @@ export default function RoadmapInputPage() {
       {/* ════════════════════════════════════════════════════════════════════
           PREMIUM TIMELINE EXPERIENCE — Two-column immersive layout
       ════════════════════════════════════════════════════════════════════ */}
-      <section className="relative bg-gradient-to-b from-white via-slate-50/40 to-white py-32 overflow-hidden">
-        {/* Enhanced atmospheric background */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-100/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-100/25 rounded-full blur-3xl" />
-          <div className="absolute top-3/4 left-1/2 w-64 h-64 bg-teal-100/20 rounded-full blur-3xl" />
-        </div>
+      <section className="relative py-32 overflow-hidden">
 
         {/* Section intro */}
         <div className="relative mx-auto mb-20 max-w-3xl px-6 text-center">
@@ -490,19 +429,19 @@ export default function RoadmapInputPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600"
+            className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
           >
-            AI-Powered Career Navigation
+            AI-POWERED CAREER NAVIGATION
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
-            className="mt-4 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl"
+            className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink"
           >
             Your personalized path to{" "}
-            <span className="bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="text-indigo italic">
               career success
             </span>
           </motion.h2>
@@ -511,7 +450,7 @@ export default function RoadmapInputPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55, delay: 0.14, ease: EASE }}
-            className="mt-4 text-lg text-slate-500"
+            className="mt-4 text-lg text-muted-foreground"
           >
             Watch how our AI transforms scattered learning into a structured journey
           </motion.p>

@@ -1,10 +1,11 @@
 "use server";
 
-import { desc, eq, and } from "drizzle-orm";
+import { count, desc, eq, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 
 import { db } from "@/lib/db";
 import { roadmaps } from "@/lib/db/schema";
+import { logError } from "@/lib/logger";
 import type { RoadmapGenerationResult } from "@/lib/llm/schemas";
 
 /**
@@ -19,6 +20,26 @@ export async function saveRoadmap(input: {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  // ── Enforce free-tier quota ──────────────────────────────────────────
+  const FREE_TIER_ROADMAP_LIMIT = 10;
+  try {
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(roadmaps)
+      .where(eq(roadmaps.clerkUserId, userId));
+
+    if (Number(total) >= FREE_TIER_ROADMAP_LIMIT) {
+      throw new Error(
+        `Free tier limit reached. You can save up to ${FREE_TIER_ROADMAP_LIMIT} roadmaps. Delete an existing one to make room.`
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Free tier limit")) {
+      throw error;
+    }
+    logError("[saveRoadmap] Quota check failed, proceeding", error, { userId });
+  }
+
   const id = crypto.randomUUID();
 
   try {
@@ -30,7 +51,7 @@ export async function saveRoadmap(input: {
       roadmapJson: input.roadmapData as unknown as Record<string, unknown>,
     });
   } catch (error) {
-    console.error("saveRoadmap DB insert failed:", error);
+    logError("[saveRoadmap] DB insert failed", error, { userId, targetRole: input.targetRole });
     throw error;
   }
 
