@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 import { suggestSkills, SkillSuggestionError } from "@/lib/ai/suggest-skills";
 import { suggestSkillsApiRequestSchema } from "@/lib/llm/schemas";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
+  const limited = await checkRateLimit("suggestSkills", userId);
+  if (limited) return limited;
+
   let json: unknown;
   try {
     json = await request.json();

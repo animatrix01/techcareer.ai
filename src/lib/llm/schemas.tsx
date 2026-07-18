@@ -47,9 +47,10 @@ export const roadmapGenerationResultSchema = z.object({
 export type RoadmapGenerationResult = z.infer<typeof roadmapGenerationResultSchema>;
 
 export const roadmapApiRequestSchema = z.object({
-  targetRole: z.string().min(1, "Target role is required"),
+  targetRole: z.string().min(1, "Target role is required").max(100, "Target role too long"),
   currentSkills: z
-    .array(z.string().min(1))
+    .array(z.string().min(1).max(50, "Skill name too long"))
+    .max(30, "Too many skills (max 30)")
     .default([]),
 });
 
@@ -106,8 +107,8 @@ export type ResumeAnalysisResult = z.infer<typeof resumeAnalysisResultSchema>;
 
 /** API request schema for resume analysis */
 export const analyzerApiRequestSchema = z.object({
-  resumeText: z.string().min(10, "Resume text must be at least 10 characters"),
-  targetRole: z.string().optional(),
+  resumeText: z.string().min(10, "Resume text must be at least 10 characters").max(15000, "Resume text too long (max 15,000 characters)"),
+  targetRole: z.string().max(100, "Target role too long").optional(),
 });
 export type AnalyzerApiRequest = z.infer<typeof analyzerApiRequestSchema>;
 
@@ -123,7 +124,7 @@ export type EnhanceSummaryResponse = z.infer<typeof enhanceSummaryResponseSchema
 
 /** API request schema for summary enhancement */
 export const enhanceSummaryApiRequestSchema = z.object({
-  currentSummary: z.string().min(3, "Summary must be at least 3 characters to enhance"),
+  currentSummary: z.string().min(3, "Summary must be at least 3 characters to enhance").max(500, "Summary too long (max 500 characters)"),
 });
 export type EnhanceSummaryApiRequest = z.infer<typeof enhanceSummaryApiRequestSchema>;
 
@@ -139,7 +140,7 @@ export type SuggestSkillsResponse = z.infer<typeof suggestSkillsResponseSchema>;
 
 /** API request schema for skill suggestions */
 export const suggestSkillsApiRequestSchema = z.object({
-  jobTitle: z.string().min(2, "Job title must be at least 2 characters"),
-  currentSkills: z.array(z.string().min(1)),
+  jobTitle: z.string().min(2, "Job title must be at least 2 characters").max(100, "Job title too long"),
+  currentSkills: z.array(z.string().min(1).max(50, "Skill name too long")).max(50, "Too many skills (max 50)"),
 });
 export type SuggestSkillsApiRequest = z.infer<typeof suggestSkillsApiRequestSchema>;
