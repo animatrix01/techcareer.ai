@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,20 +13,15 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function ATSCompactTemplate({ resume }: { resume: ResumeBuilderData }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[8mm] py-[6mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
+      className="min-h-[297mm] bg-white px-[8mm] py-[6mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
       aria-label="ATS Compact resume template preview"
     >
       <header>
@@ -97,7 +93,7 @@ export function ATSCompactTemplate({ resume }: { resume: ResumeBuilderData }) {
                   </p>
                 </div>
                 <p className="text-[9.5px] text-slate-500">
-                  {formatDates(ed.startDate, ed.endDate)}
+                  {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                 </p>
               </li>
             ))}
@@ -127,11 +123,10 @@ export function ATSCompactTemplate({ resume }: { resume: ResumeBuilderData }) {
                 <li key={p.id}>
                   <p className="text-[10px] font-semibold text-slate-900">
                     {p.name.trim() || "Project"}
+                    {p.techStack.trim() && <span className="ml-1 text-[9px] font-normal text-slate-500">({p.techStack.trim()})</span>}
                   </p>
                   {p.description.trim() && (
-                    <p className="text-[9.5px] leading-snug text-slate-700">
-                      {p.description.trim()}
-                    </p>
+                    <RichTextContent html={p.description} className="mt-0.5 text-[9.5px] leading-snug text-slate-700 [&_ul]:list-disc [&_ul]:space-y-0 [&_ul]:pl-3" />
                   )}
                 </li>
               ))}
@@ -139,6 +134,23 @@ export function ATSCompactTemplate({ resume }: { resume: ResumeBuilderData }) {
           </section>
         ) : null}
       </div>
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-3">
+          <h2 className="border-b border-slate-300 text-[11px] font-bold uppercase tracking-wide text-slate-900">
+            Certifications
+          </h2>
+          <ul className="mt-1.5 space-y-1 text-[10px] text-slate-700">
+            {certifications.map((cert) => (
+              <li key={cert.id}>
+                <span className="font-semibold text-slate-900">{cert.name.trim() || "Certification"}</span>
+                {cert.issuer && <span className="text-slate-600"> — {cert.issuer}</span>}
+                {cert.issueDate && <span className="ml-1 text-[9px] text-slate-500">({cert.issueDate})</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </article>
   );
 }

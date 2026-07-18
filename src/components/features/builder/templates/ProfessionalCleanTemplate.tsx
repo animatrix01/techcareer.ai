@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,12 +13,7 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function ProfessionalCleanTemplate({
   resume,
@@ -26,12 +22,12 @@ export function ProfessionalCleanTemplate({
   resume: ResumeBuilderData;
   themeColor: string;
 }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[10mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
+      className="min-h-[297mm] bg-white px-[10mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
       aria-label="Professional Clean resume template preview"
     >
       <header className="border-b-2 pb-3" style={{ borderColor: themeColor }}>
@@ -123,7 +119,7 @@ export function ProfessionalCleanTemplate({
                     </p>
                   </div>
                   <p className="text-[9px] text-slate-500">
-                    {formatDates(ed.startDate, ed.endDate)}
+                    {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                   </p>
                 </div>
               </li>
@@ -148,10 +144,7 @@ export function ProfessionalCleanTemplate({
 
       {projects.length > 0 ? (
         <section className="mt-3">
-          <h2
-            className="text-[11px] font-bold uppercase tracking-wide"
-            style={{ color: themeColor }}
-          >
+          <h2 className="text-[11px] font-bold uppercase tracking-wide" style={{ color: themeColor }}>
             Key Projects
           </h2>
           <ul className="mt-2 space-y-2">
@@ -159,17 +152,36 @@ export function ProfessionalCleanTemplate({
               <li key={p.id}>
                 <p className="text-[10px] font-semibold text-slate-900">
                   {p.name.trim() || "Project Name"}
-                  {p.stack.trim() && (
-                    <span className="ml-2 text-[9px] font-normal text-slate-500">
-                      ({p.stack.trim()})
-                    </span>
+                  {p.techStack.trim() && (
+                    <span className="ml-2 text-[9px] font-normal text-slate-500">({p.techStack.trim()})</span>
                   )}
                 </p>
-                {p.description.trim() && (
-                  <p className="mt-0.5 text-[9.5px] leading-relaxed text-slate-700">
-                    {p.description.trim()}
-                  </p>
+                {p.role && <p className="text-[9px] text-slate-600">{p.role}</p>}
+                {(p.githubUrl || p.liveUrl) && (
+                  <p className="text-[9px] text-slate-500">{[p.githubUrl ? "GitHub" : null, p.liveUrl ? "Live Demo" : null].filter(Boolean).join(" • ")}</p>
                 )}
+                {p.description.trim() && (
+                  <RichTextContent html={p.description} className="mt-0.5 text-[9.5px] leading-relaxed text-slate-700 [&_ul]:list-disc [&_ul]:space-y-0.5 [&_ul]:pl-4" />
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-3">
+          <h2 className="text-[11px] font-bold uppercase tracking-wide" style={{ color: themeColor }}>
+            Certifications
+          </h2>
+          <ul className="mt-2 space-y-1.5">
+            {certifications.map((cert) => (
+              <li key={cert.id} className="flex items-baseline justify-between gap-2">
+                <div>
+                  <p className="text-[10px] font-semibold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                  <p className="text-[9.5px] text-slate-700">{cert.issuer}{cert.credentialId ? ` · ID: ${cert.credentialId}` : ""}</p>
+                </div>
+                {cert.issueDate && <p className="shrink-0 text-[9px] text-slate-500">{cert.issueDate}</p>}
               </li>
             ))}
           </ul>

@@ -1,9 +1,9 @@
 "use client";
 
-import { type ReactNode, useDeferredValue, useEffect, useState, useTransition } from "react";
+import { type ReactNode, useDeferredValue, useEffect, useRef, useState, useTransition, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { ArrowLeftIcon, CheckIcon, SaveIcon } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeftIcon, CheckIcon, SaveIcon, CloudIcon } from "lucide-react";
 
 import { ResumePreview } from "@/components/features/builder/resume-preview";
 import { Button } from "@/components/ui/button";
@@ -22,54 +22,203 @@ export default function BuilderEditorLayout({ children }: EditorLayoutProps) {
   const setThemeColor = useBuilderStore((s) => s.setThemeColor);
   const deferredResume = useDeferredValue(resume);
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const resumeId = searchParams.get("resumeId");
 
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
-  // Hydrate store from DB when resumeId is in URL
+  // Track whether we've already loaded from DB for this resumeId
+  const hydratedRef = useRef<string | null>(null);
+  // Track last saved content to avoid redundant saves
+  const lastSavedRef = useRef<string>("");
+  // Autosave debounce timer
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Keep latest resume/design in a ref for the unload handler
+  const resumeRef = useRef(resume);
+  const designRef = useRef(design);
+
+  useEffect(() => { resumeRef.current = resume; }, [resume]);
+  useEffect(() => { designRef.current = design; }, [design]);
+
+  // ── Core save function ────────────────────────────────────────────────
+  const doSave = useCallback(async (silent = false) => {
+    if (!resumeId) return;
+
+    const snapshot = JSON.stringify({ resume: resumeRef.current, design: designRef.current });
+    if (snapshot === lastSavedRef.current) return; // nothing changed
+
+    if (!silent) setSaveStatus("saving");
+
+    try {
+      console.log("[doSave] Attempting to save resume:", {
+        resumeId,
+        title: resumeRef.current.basics.fullName || "Untitled Resume",
+        template: designRef.current.template,
+        themeColor: designRef.current.themeColor,
+        certsCount: resumeRef.current.certifications?.length || 0,
+        projectsCount: resumeRef.current.projects?.length || 0,
+      });
+      await saveBuilderResume({
+        resumeId,
+        title: resumeRef.current.basics.fullName || "Untitled Resume",
+        resume: resumeRef.current,
+        template: designRef.current.template,
+        themeColor: designRef.current.themeColor,
+      });
+      lastSavedRef.current = snapshot;
+      if (!silent) {
+        setSaveStatus("saved");
+        setTimeout(() => setSaveStatus("idle"), 2500);
+      }
+    } catch (error) {
+      console.error("[doSave] Save failed:", error);
+      if (!silent) {
+        setSaveStatus("error");
+        import("sonner").then(({ toast }) => {
+          const msg = error instanceof Error ? error.message : "Failed to save resume";
+          toast.error("Save failed", {
+            description: msg,
+            action: { label: "Retry", onClick: () => doSave() },
+          });
+        });
+        setTimeout(() => setSaveStatus("idle"), 3000);
+      }
+    }
+  }, [resumeId]);
+
+  // ── Autosave: debounce 3s after every resume change ───────────────────
+  useEffect(() => {
+    if (!resumeId || !hydratedRef.current) return; // don't autosave before hydration
+
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = setTimeout(() => {
+      doSave(true); // silent autosave (no status UI change)
+    }, 3000);
+
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resume, design, resumeId]);
+
+  // ── Save on page unload (tab close / refresh / navigate away) ─────────
   useEffect(() => {
     if (!resumeId) return;
+
+    const handleBeforeUnload = () => {
+      // Best-effort synchronous save hint — browsers may ignore async here
+      // so we also use the visibilitychange event below
+      const snapshot = JSON.stringify({ resume: resumeRef.current, design: designRef.current });
+      if (snapshot === lastSavedRef.current) return;
+
+      // Use sendBeacon for a fire-and-forget POST on unload
+      const payload = JSON.stringify({
+        resumeId,
+        title: resumeRef.current.basics.fullName || "Untitled Resume",
+        resume: resumeRef.current,
+        template: designRef.current.template,
+        themeColor: designRef.current.themeColor,
+      });
+      navigator.sendBeacon?.("/api/autosave-resume", payload);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        doSave(true); // silent save when user switches tab or minimizes
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [resumeId, doSave]);
+
+  // ── Load resume from DB on mount ──────────────────────────────────────
+  useEffect(() => {
+    if (!resumeId) return;
+    if (hydratedRef.current === resumeId) return;
+    hydratedRef.current = resumeId;
+
     getResumeById(resumeId).then((row) => {
-      if (!row) return;
-      // Restore template + themeColor from DB (always correct source of truth)
+      if (!row) {
+        import("sonner").then(({ toast }) => {
+          toast.error("Resume not found", {
+            description: "This resume doesn't exist or you don't have access to it.",
+          });
+        });
+        router.replace("/dashboard");
+        return;
+      }
+
       if (row.template) setTemplate(row.template as typeof design.template);
       if (row.themeColor) setThemeColor(row.themeColor);
-      // Restore resume content only if the store is empty (reopen flow, not fresh creation)
-      const isStoreEmpty =
-        !resume.basics.fullName &&
-        !resume.basics.email &&
-        resume.experience.length === 0;
-      if (isStoreEmpty && row.basics) {
+
+      // Always restore from DB — don't rely on store being empty
+      if (row.basics) {
         setResume({
           basics: row.basics as typeof resume.basics,
-          skills: typeof row.skills === "string" ? row.skills : "",
+          skills: (typeof row.skills === "object" && row.skills !== null)
+            ? row.skills as typeof resume.skills
+            : { programming: [], frameworks: [], databases: [], cloud: [], devops: [], tools: [], softSkills: [], languages: [] },
           experience: Array.isArray(row.experience) ? row.experience as typeof resume.experience : [],
           education: Array.isArray(row.education) ? row.education as typeof resume.education : [],
-          projects: [],
+          certifications: Array.isArray(row.certifications) ? row.certifications as typeof resume.certifications : [],
+          projects: Array.isArray(row.projects) ? row.projects as typeof resume.projects : [],
         });
       }
+
+      // Snapshot what we just loaded so autosave doesn't fire immediately
+      lastSavedRef.current = JSON.stringify({
+        resume: resumeRef.current,
+        design: designRef.current,
+      });
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId]);
 
   const handleSave = () => {
-    if (!resumeId) return;
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     setSaveStatus("saving");
     startTransition(async () => {
       try {
-        await saveBuilderResume({
+        console.log("[handleSave] Manual save triggered:", {
           resumeId,
+          title: resume.basics.fullName || "Untitled Resume",
+          template: design.template,
+          themeColor: design.themeColor,
+          certsCount: resume.certifications?.length || 0,
+          projectsCount: resume.projects?.length || 0,
+        });
+        await saveBuilderResume({
+          resumeId: resumeId!,
           title: resume.basics.fullName || "Untitled Resume",
           resume,
           template: design.template,
           themeColor: design.themeColor,
         });
+        const snapshot = JSON.stringify({ resume, design });
+        lastSavedRef.current = snapshot;
         setSaveStatus("saved");
+        import("sonner").then(({ toast }) => {
+          toast.success("Resume saved!", { description: "Your changes have been saved to the dashboard" });
+        });
         setTimeout(() => setSaveStatus("idle"), 2500);
-      } catch {
+      } catch (error) {
+        console.error("[handleSave] Manual save failed:", error);
         setSaveStatus("error");
+        import("sonner").then(({ toast }) => {
+          const errorMessage = error instanceof Error ? error.message : "Failed to save resume";
+          toast.error("Save failed", {
+            description: errorMessage,
+            action: { label: "Retry", onClick: () => handleSave() },
+          });
+        });
         setTimeout(() => setSaveStatus("idle"), 3000);
       }
     });
@@ -92,44 +241,54 @@ export default function BuilderEditorLayout({ children }: EditorLayoutProps) {
             </Button>
 
             {resumeId && (
-              <Button
-                type="button"
-                onClick={handleSave}
-                disabled={isPending || saveStatus === "saving"}
-                className={
-                  saveStatus === "saved"
-                    ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                    : saveStatus === "error"
-                    ? "bg-rose-600 text-white hover:bg-rose-500"
-                    : "bg-slate-900 text-white hover:bg-slate-700"
-                }
-              >
-                {saveStatus === "saving" ? (
-                  <>
-                    <SaveIcon className="mr-2 size-4 animate-pulse" />
-                    Saving...
-                  </>
-                ) : saveStatus === "saved" ? (
-                  <>
-                    <CheckIcon className="mr-2 size-4" />
-                    Saved!
-                  </>
-                ) : saveStatus === "error" ? (
-                  "Save failed"
-                ) : (
-                  <>
-                    <SaveIcon className="mr-2 size-4" />
-                    Save Resume
-                  </>
+              <div className="flex items-center gap-2">
+                {/* Autosave indicator */}
+                {saveStatus === "idle" && (
+                  <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <CloudIcon className="size-3.5" />
+                    Auto-saving
+                  </span>
                 )}
-              </Button>
+
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saveStatus === "saving"}
+                  className={
+                    saveStatus === "saved"
+                      ? "bg-emerald-600 text-white hover:bg-emerald-500"
+                      : saveStatus === "error"
+                      ? "bg-rose-600 text-white hover:bg-rose-500"
+                      : "bg-slate-900 text-white hover:bg-slate-700"
+                  }
+                >
+                  {saveStatus === "saving" ? (
+                    <>
+                      <SaveIcon className="mr-2 size-4 animate-pulse" />
+                      Saving...
+                    </>
+                  ) : saveStatus === "saved" ? (
+                    <>
+                      <CheckIcon className="mr-2 size-4" />
+                      Saved!
+                    </>
+                  ) : saveStatus === "error" ? (
+                    "Save failed"
+                  ) : (
+                    <>
+                      <SaveIcon className="mr-2 size-4" />
+                      Save Resume
+                    </>
+                  )}
+                </Button>
+              </div>
             )}
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">{children}</div>
         </section>
 
         <section className="editor-right bg-slate-100 p-6">
-          <div className="mb-3 flex items-center justify-between print:hidden">
+          <div className="mb-3 flex items-center print:hidden">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Live preview · A4
             </p>

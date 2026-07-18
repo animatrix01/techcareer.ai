@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,20 +13,13 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
 export function ClassicTemplate({ resume }: { resume: ResumeBuilderData }) {
-  const { basics, skills, experience, education } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[8mm] py-[7mm] text-zinc-900 shadow-sm ring-1 ring-zinc-200/80"
+      className="min-h-[297mm] bg-white px-[8mm] py-[7mm] text-zinc-900 shadow-sm ring-1 ring-zinc-200/80"
       aria-label="Classic resume template preview"
     >
       <header className="text-center">
@@ -95,7 +89,7 @@ export function ClassicTemplate({ resume }: { resume: ResumeBuilderData }) {
                 </p>
                 <p className="text-[9px] font-normal text-slate-700">{ed.degree}</p>
                 <p className="text-[8.5px] font-normal text-slate-500">
-                  {formatDates(ed.startDate, ed.endDate)}
+                  {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                 </p>
               </li>
             ))}
@@ -111,6 +105,55 @@ export function ClassicTemplate({ resume }: { resume: ResumeBuilderData }) {
           <p className="mt-1.5 text-center text-[9px] font-normal leading-relaxed text-slate-700">
             {skillsList.join(" \u2022 ")}
           </p>
+        </section>
+      ) : null}
+
+      {projects.length > 0 ? (
+        <section className="mt-2.5">
+          <h2 className="border-b border-slate-300 pb-1 text-center text-[10px] font-bold uppercase tracking-wider text-slate-700">
+            Projects
+          </h2>
+          <ul className="mt-1.5 space-y-2">
+            {projects.map((p) => (
+              <li key={p.id}>
+                <div className="flex items-baseline justify-between gap-1.5">
+                  <p className="text-[10px] font-semibold text-zinc-900">
+                    {p.name.trim() || "Project"}
+                    {p.techStack.trim() && (
+                      <span className="ml-1.5 text-[8.5px] font-normal text-slate-500">({p.techStack.trim()})</span>
+                    )}
+                  </p>
+                  {(p.startDate || p.endDate) && (
+                    <p className="text-[8.5px] text-slate-500">{formatDates(p.startDate, p.endDate)}</p>
+                  )}
+                </div>
+                {p.role && <p className="text-[9px] text-slate-600">{p.role}</p>}
+                {p.description.trim() ? (
+                  <RichTextContent
+                    html={p.description}
+                    className="mt-0.5 text-[9px] font-normal text-slate-700 [&_ul]:list-disc [&_ul]:space-y-0.5 [&_ul]:pl-3"
+                  />
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-2.5">
+          <h2 className="border-b border-slate-300 pb-1 text-center text-[10px] font-bold uppercase tracking-wider text-slate-700">
+            Certifications
+          </h2>
+          <ul className="mt-1.5 space-y-1.5">
+            {certifications.map((cert) => (
+              <li key={cert.id} className="text-center">
+                <p className="text-[10px] font-semibold text-zinc-900">{cert.name.trim() || "Certification"}</p>
+                <p className="text-[9px] text-slate-600">{cert.issuer}</p>
+                {cert.issueDate && <p className="text-[8.5px] text-slate-500">{cert.issueDate}</p>}
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
     </article>

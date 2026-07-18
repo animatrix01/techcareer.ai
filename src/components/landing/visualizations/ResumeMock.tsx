@@ -25,7 +25,7 @@ export function ResumeMock() {
         <div className="col-span-2 rounded-xl border border-border bg-ink p-4 text-paper shadow-soft">
           <div className="font-mono text-[10px] uppercase tracking-widest opacity-60">AI suggests</div>
           <div className="mt-2 font-serif text-base leading-snug">
-            "Led 0→1 launch reaching <span className="text-mint">$4.2M ARR</span> in 9 months."
+            &ldquo;Led 0→1 launch reaching <span className="text-mint">$4.2M ARR</span> in 9 months.&rdquo;
           </div>
           <button className="mt-3 rounded-full bg-paper/15 px-2.5 py-1 text-[10px]">↩ Insert</button>
         </div>

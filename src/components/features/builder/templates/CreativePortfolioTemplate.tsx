@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,12 +13,7 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function CreativePortfolioTemplate({
   resume,
@@ -26,12 +22,12 @@ export function CreativePortfolioTemplate({
   resume: ResumeBuilderData;
   themeColor: string;
 }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="grid h-full min-h-0 grid-cols-[40%_1fr] gap-x-0 bg-white text-slate-900 shadow-md ring-1 ring-slate-200/90"
+      className="grid min-h-[297mm] grid-cols-[40%_1fr] gap-x-0 bg-white text-slate-900 shadow-md ring-1 ring-slate-200/90"
       aria-label="Creative Portfolio resume template preview"
     >
       {/* Left sidebar with accent */}
@@ -88,10 +84,7 @@ export function CreativePortfolioTemplate({
 
         {education.length > 0 ? (
           <section className="mt-4">
-            <h2
-              className="text-[10px] font-bold uppercase tracking-wider"
-              style={{ color: themeColor }}
-            >
+            <h2 className="text-[10px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
               Education
             </h2>
             <ul className="mt-1.5 space-y-2">
@@ -100,8 +93,25 @@ export function CreativePortfolioTemplate({
                   <p className="font-semibold text-slate-900">{ed.degree.trim() || "Degree"}</p>
                   <p className="mt-0.5">{ed.institution.trim() || "Institution"}</p>
                   <p className="mt-0.5 text-[8px] text-slate-500">
-                    {formatDates(ed.startDate, ed.endDate)}
+                    {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                   </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {certifications && certifications.length > 0 ? (
+          <section className="mt-4">
+            <h2 className="text-[10px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+              Certifications
+            </h2>
+            <ul className="mt-1.5 space-y-1.5 text-[9px] text-slate-700">
+              {certifications.map((cert) => (
+                <li key={cert.id}>
+                  <p className="font-semibold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                  <p className="mt-0.5">{cert.issuer}</p>
+                  {cert.issueDate && <p className="mt-0.5 text-[8px] text-slate-500">{cert.issueDate}</p>}
                 </li>
               ))}
             </ul>
@@ -144,9 +154,9 @@ export function CreativePortfolioTemplate({
                   <p className="text-[10.5px] font-bold text-slate-900">
                     {p.name.trim() || "Project"}
                   </p>
-                  {p.stack.trim() && (
+                  {p.techStack.trim() && (
                     <p className="mt-0.5 text-[9px] font-medium" style={{ color: themeColor }}>
-                      {p.stack.trim()}
+                      {p.techStack.trim()}
                     </p>
                   )}
                   {p.description.trim() && (

@@ -165,18 +165,21 @@ function SummarySection() {
 
 function SkillsSection() {
   const skills = useBuilderStore((s) => s.resume.skills);
-  const setSkills = useBuilderStore((s) => s.setSkills);
+  // Note: This is a legacy component - skills are now categorized in the step editor
+  // Convert categorized skills to a string for display only
+  const skillsString = typeof skills === 'object' && skills !== null ? 
+    Object.values(skills).flat().join(', ') : '';
 
   return (
     <div className="space-y-1">
-      <Label htmlFor="rb-skills">Skills (comma or newline separated)</Label>
+      <Label htmlFor="rb-skills">Skills (managed in step editor)</Label>
       <Textarea
         id="rb-skills"
-        value={skills}
-        onChange={(e) => setSkills(e.target.value)}
-        placeholder="TypeScript, React, PostgreSQL, System design"
+        value={skillsString}
+        disabled
+        placeholder="Skills are managed in the step-by-step editor"
         rows={4}
-        className="resize-y bg-zinc-950/80"
+        className="resize-y bg-zinc-950/80 opacity-60"
       />
     </div>
   );

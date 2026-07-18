@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 import { cn } from "@/lib/utils";
 
 function formatDates(start: string, end: string) {
@@ -13,12 +14,7 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function DesignerSplitTemplate({
   resume,
@@ -27,12 +23,12 @@ export function DesignerSplitTemplate({
   resume: ResumeBuilderData;
   themeColor: string;
 }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="grid h-full min-h-0 grid-cols-2 gap-x-4 bg-white px-[9mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
+      className="grid min-h-[297mm] grid-cols-2 gap-x-4 bg-white px-[9mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
       aria-label="Designer Split resume template preview"
     >
       {/* Left column */}
@@ -113,8 +109,29 @@ export function DesignerSplitTemplate({
                     {ed.institution.trim() || "Institution"}
                   </p>
                   <p className="mt-0.5 text-[8.5px] text-slate-500">
-                    {formatDates(ed.startDate, ed.endDate)}
+                    {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                   </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {certifications && certifications.length > 0 ? (
+          <section className="mt-4">
+            <h2
+              className="text-[10.5px] font-bold uppercase tracking-wider"
+              style={{ color: themeColor }}
+            >
+              Certifications
+            </h2>
+            <div className="mt-0.5 h-0.5 w-8" style={{ backgroundColor: themeColor }} />
+            <ul className="mt-2 space-y-1.5">
+              {certifications.map((cert) => (
+                <li key={cert.id}>
+                  <p className="text-[9.5px] font-semibold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                  <p className="mt-0.5 text-[9px] text-slate-600">{cert.issuer}</p>
+                  {cert.issueDate && <p className="text-[8.5px] text-slate-500">{cert.issueDate}</p>}
                 </li>
               ))}
             </ul>
@@ -174,9 +191,9 @@ export function DesignerSplitTemplate({
                   <p className="text-[9.5px] font-bold text-slate-900">
                     {p.name.trim() || "Project"}
                   </p>
-                  {p.stack.trim() && (
+                  {p.techStack.trim() && (
                     <p className="mt-0.5 text-[8.5px] font-medium text-slate-600">
-                      {p.stack.trim()}
+                      {p.techStack.trim()}
                     </p>
                   )}
                   {p.description.trim() && (

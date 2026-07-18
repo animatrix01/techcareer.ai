@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,20 +13,15 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function ATSMinimalTemplate({ resume }: { resume: ResumeBuilderData }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[10mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
+      className="min-h-[297mm] bg-white px-[10mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
       aria-label="ATS Minimal resume template preview"
     >
       <header>
@@ -101,14 +97,22 @@ export function ATSMinimalTemplate({ resume }: { resume: ResumeBuilderData }) {
                 <div className="flex items-baseline justify-between gap-2">
                   <p className="text-[11px] font-semibold text-slate-900">
                     {ed.degree.trim() || "Degree"}
+                    {(ed as any).fieldOfStudy?.trim() ? ` · ${(ed as any).fieldOfStudy.trim()}` : ""}
                   </p>
                   <p className="text-[10px] text-slate-500">
-                    {formatDates(ed.startDate, ed.endDate)}
+                    {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                   </p>
                 </div>
                 <p className="text-[10.5px] text-slate-700">
                   {ed.institution.trim() || "Institution"}
+                  {(ed as any).city?.trim() ? ` · ${(ed as any).city.trim()}` : ""}
+                  {(ed as any).gpa?.trim() ? ` | GPA: ${(ed as any).gpa.trim()}` : ""}
                 </p>
+                {(ed as any).description?.trim() && (
+                  <p className="mt-0.5 text-[10px] leading-relaxed text-slate-500 italic">
+                    {(ed as any).description.trim()}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
@@ -138,17 +142,41 @@ export function ATSMinimalTemplate({ resume }: { resume: ResumeBuilderData }) {
               <li key={p.id}>
                 <p className="text-[11px] font-semibold text-slate-900">
                   {p.name.trim() || "Project Name"}
-                  {p.stack.trim() && (
+                  {p.techStack.trim() && (
                     <span className="ml-2 text-[10px] font-normal text-slate-500">
-                      ({p.stack.trim()})
+                      ({p.techStack.trim()})
                     </span>
                   )}
                 </p>
-                {p.description.trim() && (
-                  <p className="mt-1 text-[10.5px] leading-relaxed text-slate-700">
-                    {p.description.trim()}
+                {p.role && <p className="text-[10px] text-slate-600">{p.role}</p>}
+                {(p.githubUrl || p.liveUrl) && (
+                  <p className="text-[9.5px] text-slate-500">
+                    {[p.githubUrl ? "GitHub" : null, p.liveUrl ? "Live Demo" : null].filter(Boolean).join(" • ")}
                   </p>
                 )}
+                {p.description.trim() && (
+                  <RichTextContent html={p.description} className="mt-1 text-[10.5px] leading-relaxed text-slate-700 [&_ul]:list-disc [&_ul]:space-y-0.5 [&_ul]:pl-4" />
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-4">
+          <h2 className="text-[12px] font-bold uppercase tracking-wide text-slate-900">
+            Certifications
+          </h2>
+          <div className="mt-1 h-px bg-slate-300" />
+          <ul className="mt-2.5 space-y-1.5">
+            {certifications.map((cert) => (
+              <li key={cert.id} className="flex items-baseline justify-between gap-2">
+                <div>
+                  <p className="text-[11px] font-semibold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                  <p className="text-[10px] text-slate-700">{cert.issuer}{cert.credentialId ? ` · ID: ${cert.credentialId}` : ""}</p>
+                </div>
+                {cert.issueDate && <p className="shrink-0 text-[9.5px] text-slate-500">{cert.issueDate}</p>}
               </li>
             ))}
           </ul>

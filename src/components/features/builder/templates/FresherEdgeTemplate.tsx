@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,12 +13,7 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function FresherEdgeTemplate({
   resume,
@@ -26,12 +22,12 @@ export function FresherEdgeTemplate({
   resume: ResumeBuilderData;
   themeColor: string;
 }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[9mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
+      className="min-h-[297mm] bg-white px-[9mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
       aria-label="Fresher Edge resume template preview"
     >
       <header className="text-center">
@@ -86,7 +82,7 @@ export function FresherEdgeTemplate({
                   {ed.institution.trim() || "Institution"}
                 </p>
                 <p className="mt-0.5 text-[9px] text-slate-500">
-                  {formatDates(ed.startDate, ed.endDate)}
+                  {formatDates(ed.startDate, (ed as any).currentlyStudying ? "Present" : ed.endDate)}
                 </p>
               </li>
             ))}
@@ -130,9 +126,9 @@ export function FresherEdgeTemplate({
                 <p className="text-[10.5px] font-bold text-slate-900">
                   {p.name.trim() || "Project"}
                 </p>
-                {p.stack.trim() && (
+                {p.techStack.trim() && (
                   <p className="mt-0.5 text-[9px] font-medium" style={{ color: themeColor }}>
-                    {p.stack.trim()}
+                    {p.techStack.trim()}
                   </p>
                 )}
                 {p.description.trim() && (
@@ -148,30 +144,35 @@ export function FresherEdgeTemplate({
 
       {experience.length > 0 ? (
         <section className="mt-3.5">
-          <h2
-            className="text-center text-[10.5px] font-bold uppercase tracking-wider"
-            style={{ color: themeColor }}
-          >
+          <h2 className="text-center text-[10.5px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
             Experience
           </h2>
           <ul className="mt-2 space-y-2.5">
             {experience.map((job) => (
               <li key={job.id} className="text-center">
-                <p className="text-[10.5px] font-bold text-slate-900">
-                  {job.role.trim() || "Role"}
-                </p>
-                <p className="mt-0.5 text-[10px] font-semibold text-slate-700">
-                  {job.company.trim() || "Company"}
-                </p>
-                <p className="mt-0.5 text-[9px] text-slate-500">
-                  {formatDates(job.startDate, job.endDate)}
-                </p>
+                <p className="text-[10.5px] font-bold text-slate-900">{job.role.trim() || "Role"}</p>
+                <p className="mt-0.5 text-[10px] font-semibold text-slate-700">{job.company.trim() || "Company"}</p>
+                <p className="mt-0.5 text-[9px] text-slate-500">{formatDates(job.startDate, job.endDate)}</p>
                 {job.description.trim() ? (
-                  <RichTextContent
-                    html={job.description}
-                    className="mt-1 text-[9.5px] leading-relaxed text-slate-700 [&_ul]:list-disc [&_ul]:space-y-0.5 [&_ul]:pl-4"
-                  />
+                  <RichTextContent html={job.description} className="mt-1 text-[9.5px] leading-relaxed text-slate-700 [&_ul]:list-disc [&_ul]:space-y-0.5 [&_ul]:pl-4" />
                 ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-3.5">
+          <h2 className="text-center text-[10.5px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+            Certifications
+          </h2>
+          <ul className="mt-2 space-y-2 text-center">
+            {certifications.map((cert) => (
+              <li key={cert.id}>
+                <p className="text-[10.5px] font-bold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                <p className="mt-0.5 text-[9.5px] text-slate-700">{cert.issuer}</p>
+                {cert.issueDate && <p className="text-[9px] text-slate-500">{cert.issueDate}</p>}
               </li>
             ))}
           </ul>

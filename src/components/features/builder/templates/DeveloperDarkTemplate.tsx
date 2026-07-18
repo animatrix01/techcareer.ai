@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,12 +13,7 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function DeveloperDarkTemplate({
   resume,
@@ -26,12 +22,12 @@ export function DeveloperDarkTemplate({
   resume: ResumeBuilderData;
   themeColor: string;
 }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-slate-900 px-[9mm] py-[8mm] text-slate-100 shadow-md ring-1 ring-slate-700"
+      className="min-h-[297mm] bg-slate-900 px-[9mm] py-[8mm] text-slate-100 shadow-md ring-1 ring-slate-700"
       aria-label="Developer Dark resume template preview"
     >
       <header className="border-b border-slate-700 pb-3.5">
@@ -88,18 +84,34 @@ export function DeveloperDarkTemplate({
           <ul className="mt-2.5 space-y-3">
             {projects.map((p) => (
               <li key={p.id} className="rounded-lg border border-slate-700 bg-slate-800/50 p-3">
-                <p className="font-mono text-[11px] font-bold" style={{ color: themeColor }}>
-                  {p.name.trim() || "project_name"}
-                </p>
-                {p.stack.trim() && (
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="font-mono text-[11px] font-bold" style={{ color: themeColor }}>
+                    {p.name.trim() || "project_name"}
+                  </p>
+                  {(p.startDate || p.endDate) && (
+                    <p className="font-mono text-[9px] text-slate-500">
+                      {formatDates(p.startDate, p.endDate)}
+                    </p>
+                  )}
+                </div>
+                {p.role && (
+                  <p className="mt-0.5 text-[10px] text-slate-400">{p.role}</p>
+                )}
+                {p.techStack.trim() && (
                   <p className="mt-1 font-mono text-[10px] text-slate-400">
-                    Stack: {p.stack.trim()}
+                    Stack: {p.techStack.trim()}
+                  </p>
+                )}
+                {(p.githubUrl || p.liveUrl) && (
+                  <p className="mt-1 font-mono text-[9.5px] text-slate-500">
+                    {[p.githubUrl ? "📁 repo" : null, p.liveUrl ? "🌐 demo" : null].filter(Boolean).join(" | ")}
                   </p>
                 )}
                 {p.description.trim() && (
-                  <p className="mt-1.5 text-[10.5px] leading-relaxed text-slate-300">
-                    {p.description.trim()}
-                  </p>
+                  <RichTextContent
+                    html={p.description}
+                    className="mt-1.5 text-[10.5px] leading-relaxed text-slate-300 [&_ul]:list-disc [&_ul]:space-y-0.5 [&_ul]:pl-3"
+                  />
                 )}
               </li>
             ))}
@@ -120,12 +132,22 @@ export function DeveloperDarkTemplate({
                     {job.role.trim() || "role"}
                   </p>
                   <p className="font-mono text-[9.5px] text-slate-500">
-                    {formatDates(job.startDate, job.endDate)}
+                    {formatDates(job.startDate, job.currentlyWorking ? "Present" : job.endDate)}
                   </p>
                 </div>
                 <p className="mt-1 text-[10.5px] text-slate-400">
                   @ {job.company.trim() || "company"}
                 </p>
+                {(job.location || job.workMode) && (
+                  <p className="font-mono text-[9.5px] text-slate-500">
+                    {[job.location, job.workMode].filter(Boolean).join(" | ")}
+                  </p>
+                )}
+                {job.technologies.length > 0 && (
+                  <p className="mt-1 font-mono text-[10px] text-slate-400">
+                    Tech: {job.technologies.join(", ")}
+                  </p>
+                )}
                 {job.description.trim() ? (
                   <RichTextContent
                     html={job.description}
@@ -147,14 +169,42 @@ export function DeveloperDarkTemplate({
             {education.map((ed) => (
               <li key={ed.id}>
                 <p className="text-[10.5px] font-semibold text-slate-100">
-                  {ed.degree.trim() || "degree"}
+                  {ed.degree.trim() || "degree"}{ed.fieldOfStudy ? ` in ${ed.fieldOfStudy}` : ""}
                 </p>
                 <p className="mt-1 text-[10px] text-slate-400">
                   {ed.institution.trim() || "institution"}
                 </p>
+                {(ed.city || ed.gpa) && (
+                  <p className="font-mono text-[9px] text-slate-500">
+                    {[ed.city, ed.gpa ? `GPA: ${ed.gpa}` : ""].filter(Boolean).join(" | ")}
+                  </p>
+                )}
                 <p className="mt-0.5 font-mono text-[9.5px] text-slate-500">
-                  {formatDates(ed.startDate, ed.endDate)}
+                  {formatDates(ed.startDate, ed.currentlyStudying ? "Present" : ed.endDate)}
                 </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-4">
+          <h2 className="font-mono text-[11.5px] font-bold" style={{ color: themeColor }}>
+            $ ls certifications/
+          </h2>
+          <ul className="mt-2.5 space-y-2">
+            {certifications.map((cert) => (
+              <li key={cert.id} className="rounded border border-slate-700 bg-slate-800/30 p-2.5">
+                <p className="text-[10.5px] font-semibold text-slate-100">
+                  {cert.name.trim() || "certification"}
+                </p>
+                <p className="mt-1 text-[10px] text-slate-400">{cert.issuer}</p>
+                {(cert.issueDate || cert.credentialId) && (
+                  <p className="mt-0.5 font-mono text-[9px] text-slate-500">
+                    {[cert.issueDate, cert.credentialId ? `ID: ${cert.credentialId}` : ""].filter(Boolean).join(" | ")}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

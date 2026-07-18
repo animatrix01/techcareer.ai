@@ -2,6 +2,7 @@
 
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function fmt(start: string, end: string) {
   const s = start.trim();
@@ -12,10 +13,6 @@ function fmt(start: string, end: string) {
   return `${s} – ${e}`;
 }
 
-function skills(raw: string) {
-  return raw.split(/[,•\n]/g).map((s) => s.trim()).filter(Boolean);
-}
-
 export function InnovatorTemplate({
   resume,
   themeColor = "#6366f1",
@@ -23,12 +20,12 @@ export function InnovatorTemplate({
   resume: ResumeBuilderData;
   themeColor?: string;
 }) {
-  const { basics, skills: rawSkills, experience, education, projects } = resume;
-  const skillList = skills(rawSkills);
+  const { basics, skills: rawSkills, experience, education, projects, certifications } = resume;
+  const skillList = formatSkillsForTemplate(rawSkills);
 
   return (
     <article
-      className="grid h-full min-h-0 grid-cols-[minmax(0,38%)_1fr] bg-white text-slate-900"
+      className="grid min-h-[297mm] grid-cols-[minmax(0,38%)_1fr] bg-white text-slate-900"
       aria-label="Innovator resume template"
     >
       {/* Left sidebar */}
@@ -143,12 +140,33 @@ export function InnovatorTemplate({
                 <li key={p.id}>
                   <div className="flex items-baseline justify-between gap-1">
                     <p className="text-[11px] font-bold text-slate-900">{p.name.trim() || "Project"}</p>
-                    {p.stack.trim() && (
-                      <p className="shrink-0 text-[8.5px] font-medium" style={{ color: themeColor }}>{p.stack.trim()}</p>
+                    {p.techStack.trim() && (
+                      <p className="shrink-0 text-[8.5px] font-medium" style={{ color: themeColor }}>{p.techStack.trim()}</p>
                     )}
                   </div>
+                  {p.role && <p className="text-[9px] text-slate-600">{p.role}</p>}
                   {p.description.trim() && (
                     <p className="mt-1 text-[10px] leading-relaxed text-slate-700">{p.description.trim()}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Certifications */}
+        {certifications && certifications.length > 0 && (
+          <section>
+            <MainLabel label="Certifications" color={themeColor} />
+            <ul className="mt-2 space-y-1.5">
+              {certifications.map((cert) => (
+                <li key={cert.id} className="flex items-baseline justify-between gap-1">
+                  <div>
+                    <p className="text-[10.5px] font-bold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                    <p className="text-[9.5px] font-semibold" style={{ color: themeColor }}>{cert.issuer}</p>
+                  </div>
+                  {cert.issueDate && (
+                    <p className="shrink-0 rounded-full px-2 py-1 text-[8.5px] font-medium text-white" style={{ backgroundColor: themeColor }}>{cert.issueDate}</p>
                   )}
                 </li>
               ))}

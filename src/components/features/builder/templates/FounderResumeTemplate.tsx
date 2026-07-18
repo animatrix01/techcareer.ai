@@ -2,6 +2,7 @@
 
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function formatDates(start: string, end: string) {
   const s = start.trim();
@@ -12,12 +13,7 @@ function formatDates(start: string, end: string) {
   return `${s} - ${e}`;
 }
 
-function skillTokens(skills: string) {
-  return skills
-    .split(/[,•\n]/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+
 
 export function FounderResumeTemplate({
   resume,
@@ -26,12 +22,12 @@ export function FounderResumeTemplate({
   resume: ResumeBuilderData;
   themeColor: string;
 }) {
-  const { basics, skills, experience, education, projects } = resume;
-  const skillsList = skillTokens(skills);
+  const { basics, skills, experience, education, projects, certifications } = resume;
+  const skillsList = formatSkillsForTemplate(skills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[9mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
+      className="min-h-[297mm] bg-white px-[9mm] py-[8mm] text-slate-900 shadow-sm ring-1 ring-slate-200/80"
       aria-label="Founder Resume template preview"
     >
       <header className="relative overflow-hidden rounded-2xl p-4" style={{ backgroundColor: `${themeColor}10` }}>
@@ -85,9 +81,9 @@ export function FounderResumeTemplate({
                 <p className="text-[10.5px] font-bold text-slate-900">
                   {p.name.trim() || "Venture"}
                 </p>
-                {p.stack.trim() && (
+                {p.techStack.trim() && (
                   <p className="mt-0.5 text-[9px] font-semibold" style={{ color: themeColor }}>
-                    {p.stack.trim()}
+                    {p.techStack.trim()}
                   </p>
                 )}
                 {p.description.trim() && (
@@ -138,21 +134,14 @@ export function FounderResumeTemplate({
       <div className="mt-3.5 grid grid-cols-2 gap-4">
         {education.length > 0 ? (
           <section>
-            <h2
-              className="text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: themeColor }}
-            >
+            <h2 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
               Education
             </h2>
             <ul className="mt-2 space-y-2">
               {education.map((ed) => (
                 <li key={ed.id}>
-                  <p className="text-[9.5px] font-semibold text-slate-900">
-                    {ed.degree.trim() || "Degree"}
-                  </p>
-                  <p className="mt-0.5 text-[9px] text-slate-700">
-                    {ed.institution.trim() || "Institution"}
-                  </p>
+                  <p className="text-[9.5px] font-semibold text-slate-900">{ed.degree.trim() || "Degree"}</p>
+                  <p className="mt-0.5 text-[9px] text-slate-700">{ed.institution.trim() || "Institution"}</p>
                 </li>
               ))}
             </ul>
@@ -161,19 +150,12 @@ export function FounderResumeTemplate({
 
         {skillsList.length > 0 ? (
           <section>
-            <h2
-              className="text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: themeColor }}
-            >
+            <h2 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
               Core Skills
             </h2>
             <div className="mt-2 flex flex-wrap gap-1">
               {skillsList.slice(0, 8).map((skill, i) => (
-                <span
-                  key={i}
-                  className="rounded-md px-2 py-0.5 text-[8.5px] font-medium text-white"
-                  style={{ backgroundColor: themeColor }}
-                >
+                <span key={i} className="rounded-md px-2 py-0.5 text-[8.5px] font-medium text-white" style={{ backgroundColor: themeColor }}>
                   {skill}
                 </span>
               ))}
@@ -181,6 +163,25 @@ export function FounderResumeTemplate({
           </section>
         ) : null}
       </div>
+
+      {certifications && certifications.length > 0 ? (
+        <section className="mt-3.5">
+          <h2 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: themeColor }}>
+            Certifications
+          </h2>
+          <ul className="mt-2 space-y-1.5">
+            {certifications.map((cert) => (
+              <li key={cert.id} className="flex items-baseline justify-between gap-2">
+                <div>
+                  <p className="text-[10px] font-semibold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                  <p className="text-[9.5px] text-slate-700">{cert.issuer}</p>
+                </div>
+                {cert.issueDate && <p className="shrink-0 text-[9px] text-slate-500">{cert.issueDate}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </article>
   );
 }

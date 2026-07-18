@@ -43,46 +43,88 @@ export default function BuilderTemplatesPage() {
     try {
       const tpl = templates.find((t) => t.id === templateId);
       const color = tpl?.defaultThemeColor ?? "#1a2e35";
+      
+      console.log("🎨 Template selected:", {
+        templateId,
+        templateFound: !!tpl,
+        color,
+        colorLength: color.length,
+        templateDefaultColor: tpl?.defaultThemeColor,
+      });
+      
       // Reset first, then set template so it isn't overwritten by resetResume
       resetResume();
       setTemplate(templateId);
       setThemeColor(color);
+      
+      console.log("💾 Creating new resume with:", { templateId, color });
+      
       // Save template + themeColor into the DB row immediately
       const resumeId = await createNewResume("Untitled Resume", templateId, color);
+      
+      console.log("✅ Resume created with ID:", resumeId);
+      
       router.push(`/tools/builder/editor/contact?resumeId=${resumeId}`);
     } catch (err) {
       console.error("Failed to create resume:", err);
       setLoadingId(null);
+      
+      const errorMessage = err instanceof Error ? err.message : "Failed to create resume";
+      const isQuotaError = errorMessage.includes("Free tier limit");
+
+      import("sonner").then(({ toast }) => {
+        if (isQuotaError) {
+          toast.error("Resume limit reached", {
+            description: "You've used all 10 resume slots. Delete an existing resume to create a new one.",
+            action: {
+              label: "Go to Dashboard",
+              onClick: () => router.push("/dashboard"),
+            },
+            duration: 6000,
+          });
+          // Redirect to dashboard after a short delay so the toast is readable
+          setTimeout(() => router.push("/dashboard"), 1500);
+        } else {
+          toast.error("Template selection failed", {
+            description: errorMessage,
+            action: {
+              label: "Try Again",
+              onClick: () => onTemplateClick(templateId),
+            },
+          });
+        }
+      });
     }
   };
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-slate-50 to-white text-slate-900">
-      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <header className="mb-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600">
+    <main className="min-h-[calc(100vh-4rem)]">
+
+      <div className="mx-auto w-full max-w-[1180px] px-6 py-16">
+        <header className="mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full bg-indigo/10 border border-indigo/20 px-4 py-1.5 text-xs font-medium text-indigo uppercase tracking-wider">
             Resume Builder
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          </div>
+          <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink">
             Choose your template
           </h1>
-          <p className="mt-3 max-w-2xl text-sm text-slate-500 sm:text-base">
+          <p className="mt-3 max-w-2xl text-muted-foreground">
             All templates use the same data — switch anytime without losing your content.
           </p>
         </header>
 
         {/* Filter Bar */}
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="mb-10 flex flex-wrap gap-2">
           {filterCategories.map((category) => (
             <button
               key={category}
               type="button"
               onClick={() => setActiveFilter(category)}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
+                "rounded-full px-4 py-2 text-sm font-medium border transition-all duration-200",
                 activeFilter === category
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-                  : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 hover:ring-slate-300"
+                  ? "bg-ink text-paper border-ink"
+                  : "bg-paper/50 border-border text-muted-foreground hover:text-ink hover:bg-paper/80 backdrop-blur-sm"
               )}
             >
               {category}
@@ -108,18 +150,16 @@ export default function BuilderTemplatesPage() {
                 disabled={loadingId !== null}
                 onClick={() => onTemplateClick(template.id)}
                 className={cn(
-                  "group relative flex flex-col overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition-all duration-200",
-                  "hover:-translate-y-0.5 hover:shadow-lg",
-                  isActive
-                    ? "border-indigo-400 ring-2 ring-indigo-200"
-                    : "border-slate-200 hover:border-slate-300",
+                  "group relative tile flex flex-col overflow-hidden text-left transition-all duration-300",
+                  "hover:-translate-y-2 hover:shadow-float",
+                  isActive && "ring-2 ring-indigo ring-offset-2",
                   loadingId !== null && !isLoading && "cursor-wait opacity-60",
                 )}
               >
                 {/* Selected badge */}
                 {isActive && (
                   <div className="absolute right-3 top-3 z-10">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-600 px-2.5 py-1 text-[10px] font-semibold text-white shadow-sm">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo px-3 py-1 text-xs font-semibold text-paper shadow-soft">
                       <CheckIcon className="size-3" />
                       Selected
                     </span>
@@ -127,20 +167,17 @@ export default function BuilderTemplatesPage() {
                 )}
 
                 {/* Live preview thumbnail */}
-                <div className="relative h-[380px] w-full overflow-hidden bg-slate-100">
-                  {/* A4 canvas scaled to fit the card */}
+                <div className="relative h-[380px] w-full overflow-hidden bg-muted/30">
                   <div
-                    className="pointer-events-none absolute"
+                    className="pointer-events-none"
                     style={{
-                      width: "210mm",
-                      height: "297mm",
-                      transform: "scale(0.48)",
-                      transformOrigin: "top center",
+                      width: "794px",
+                      height: "1123px",
+                      transform: "scale(0.455)",
+                      transformOrigin: "top left",
+                      position: "absolute",
                       top: 0,
-                      left: "50%",
-                      marginLeft: "-105mm",
-                      imageRendering: "crisp-edges",
-                      WebkitFontSmoothing: "antialiased",
+                      left: 0,
                     }}
                   >
                     <ResumePreview
@@ -149,20 +186,18 @@ export default function BuilderTemplatesPage() {
                       themeColor={template.defaultThemeColor}
                     />
                   </div>
-                  {/* Gradient fade at bottom */}
-                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white via-white/60 to-transparent" />
                 </div>
 
                 {/* Card footer */}
-                <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between gap-3 border-t border-border bg-paper/80 backdrop-blur-sm px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{template.name}</p>
-                    <p className="mt-0.5 text-xs text-slate-500 line-clamp-1">{template.description}</p>
+                    <p className="text-sm font-semibold text-ink">{template.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">{template.description}</p>
                   </div>
                   <div
                     className={cn(
-                      "flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition",
-                      isLoading ? "opacity-70" : "group-hover:opacity-90",
+                      "flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition shadow-soft",
+                      isLoading ? "opacity-70" : "group-hover:shadow-float",
                     )}
                     style={{ backgroundColor: template.defaultThemeColor }}
                   >
@@ -177,9 +212,9 @@ export default function BuilderTemplatesPage() {
 
         {/* Empty state */}
         {filteredTemplates.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-lg font-semibold text-slate-900">No templates found</p>
-            <p className="mt-2 text-sm text-slate-500">
+          <div className="tile flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-lg font-semibold text-ink">No templates found</p>
+            <p className="mt-2 text-sm text-muted-foreground">
               Try selecting a different category
             </p>
           </div>

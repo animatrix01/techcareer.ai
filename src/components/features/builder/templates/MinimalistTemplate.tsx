@@ -2,6 +2,7 @@
 
 import { RichTextContent } from "@/components/features/builder/rich-text-content";
 import type { ResumeBuilderData } from "@/stores/useBuilderStore";
+import { formatSkillsForTemplate } from "@/lib/utils/skills-formatter";
 
 function fmt(start: string, end: string) {
   const s = start.trim();
@@ -12,17 +13,13 @@ function fmt(start: string, end: string) {
   return `${s} – ${e}`;
 }
 
-function skills(raw: string) {
-  return raw.split(/[,•\n]/g).map((s) => s.trim()).filter(Boolean);
-}
-
 export function MinimalistTemplate({ resume }: { resume: ResumeBuilderData }) {
-  const { basics, skills: rawSkills, experience, education, projects } = resume;
-  const skillList = skills(rawSkills);
+  const { basics, skills: rawSkills, experience, education, projects, certifications } = resume;
+  const skillList = formatSkillsForTemplate(rawSkills);
 
   return (
     <article
-      className="h-full min-h-0 bg-white px-[12mm] py-[10mm] text-slate-900"
+      className="min-h-[297mm] bg-white px-[12mm] py-[10mm] text-slate-900"
       aria-label="Minimalist resume template"
     >
       {/* Header */}
@@ -93,8 +90,8 @@ export function MinimalistTemplate({ resume }: { resume: ResumeBuilderData }) {
               <li key={p.id}>
                 <div className="flex items-baseline justify-between gap-2">
                   <p className="text-[11px] font-semibold text-slate-900">{p.name.trim() || "Project"}</p>
-                  {p.stack.trim() && (
-                    <p className="text-[9px] text-slate-400">{p.stack.trim()}</p>
+                  {p.techStack.trim() && (
+                    <p className="text-[9px] text-slate-400">{p.techStack.trim()}</p>
                   )}
                 </div>
                 {p.description.trim() && (
@@ -139,6 +136,29 @@ export function MinimalistTemplate({ resume }: { resume: ResumeBuilderData }) {
           <p className="text-[10px] leading-relaxed text-slate-600">
             {skillList.join("  ·  ")}
           </p>
+        </section>
+      )}
+
+      {/* Certifications */}
+      {certifications && certifications.length > 0 && (
+        <section className="mb-5">
+          <Rule />
+          <h2 className="mb-2.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+            Certifications
+          </h2>
+          <ul className="space-y-2">
+            {certifications.map((cert) => (
+              <li key={cert.id} className="grid grid-cols-[1fr_auto] gap-x-3">
+                <div>
+                  <p className="text-[11px] font-semibold text-slate-900">{cert.name.trim() || "Certification"}</p>
+                  <p className="text-[10px] text-slate-500">{cert.issuer}</p>
+                </div>
+                {cert.issueDate && (
+                  <p className="mt-0.5 text-right text-[9px] text-slate-400 whitespace-nowrap">{cert.issueDate}</p>
+                )}
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </article>

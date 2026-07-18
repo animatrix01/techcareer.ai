@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { SAMPLE_PROFILES } from "@/lib/config/sample-resume";
+import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 import { ModernTemplate } from "@/components/features/builder/templates/ModernTemplate";
 import { ClassicTemplate } from "@/components/features/builder/templates/ClassicTemplate";
 import { ExecutiveTemplate } from "@/components/features/builder/templates/ExecutiveTemplate";
@@ -139,8 +140,8 @@ function LivePreview({
   themeColor,
   cardHeight,
 }: {
-  Component: React.ComponentType<{ resume: any; themeColor: string }>;
-  resume: any;
+  Component: React.ComponentType<{ resume: ResumeBuilderData; themeColor: string }>;
+  resume: ResumeBuilderData;
   themeColor: string;
   cardHeight: number;
 }) {
