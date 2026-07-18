@@ -13,14 +13,16 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const isAuthPage =
     pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isLandingPage = pathname === "/";
 
-  if (isAuthPage) {
+  // Landing page and auth pages manage their own layout
+  if (isAuthPage || isLandingPage) {
     return <>{children}</>;
   }
 
   return (
     <>
-      <Navbar isLanding={pathname === "/"} />
+      <Navbar isLanding={false} />
       <main className="flex-1">{children}</main>
       <Footer />
     </>

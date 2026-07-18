@@ -1,169 +1,315 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import {
-  CheckCircle2, ArrowRight, Star, Brain, Target, Code2,
-  GraduationCap, Briefcase, ScanSearch,
-  Route, FilePenLine, Shield, Clock, Users, Sparkles,
+  ArrowRight, CheckCircle2, Brain, Target, FileText,
+  ScanSearch, Route, FilePenLine, Sparkles, Shield,
+  Clock, Zap, Star, BarChart3, Award
 } from "lucide-react";
 
-function FadeIn({ children, delay = 0, className }: {
-  children: React.ReactNode; delay?: number; className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  const rm = useReducedMotion();
-  return (
-    <motion.div ref={ref}
-      initial={rm ? { opacity: 0 } : { opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >{children}</motion.div>
-  );
-}
+const TOOLS = [
+  {
+    icon: FilePenLine,
+    tag: "Resume Builder",
+    title: "Build a resume that gets past ATS — and impresses humans",
+    description:
+      "Step-by-step guided editor with AI enhancements, live preview, and 20+ templates. Fill in your details once, switch templates anytime without losing data.",
+    href: "/tools/builder/templates",
+    cta: "Start Building",
+    accent: "indigo",
+    features: [
+      "20+ ATS-ready professional templates",
+      "AI-powered bullet point enhancement",
+      "Live real-time preview as you type",
+      "PDF download via browser print",
+      "Skills chip input with AI suggestions",
+      "Experience, Education, Projects steps",
+    ],
+  },
+  {
+    icon: ScanSearch,
+    tag: "ATS Analyzer",
+    title: "Know your ATS score before the recruiter sees your resume",
+    description:
+      "Upload your resume (PDF or DOCX) and get an instant AI-powered score with specific issues, weak action verb detection, and fix suggestions.",
+    href: "/tools/analyzer",
+    cta: "Analyze Resume",
+    accent: "teal",
+    features: [
+      "Instant 0–100 ATS compatibility score",
+      "Weak action verb detection",
+      "Issue severity breakdown (critical/warning/info)",
+      "Specific improvement suggestions per issue",
+      "Supports PDF and DOCX uploads",
+      "AI-generated fix recommendations",
+    ],
+  },
+  {
+    icon: Route,
+    tag: "Career Roadmap",
+    title: "A personalized learning path to your target role",
+    description:
+      "Tell us your target role and current skills. Our AI generates a step-by-step roadmap with milestones, skill priorities, and estimated timelines.",
+    href: "/tools/roadmap",
+    cta: "Generate Roadmap",
+    accent: "coral",
+    features: [
+      "Role-specific personalized roadmap",
+      "AI-ordered skill learning sequence",
+      "Time estimates per learning phase",
+      "Resource and certification recommendations",
+      "Saved to your dashboard",
+      "1,000+ role targets supported",
+    ],
+  },
+];
+
+const AI_FEATURES = [
+  {
+    icon: Brain,
+    title: "AI Summary Writer",
+    description: "Transform weak bullet points into powerful, quantified impact statements with one click.",
+    tag: "Builder",
+  },
+  {
+    icon: Target,
+    title: "ATS Keyword Matching",
+    description: "Analyzes keyword density and gaps against industry standards and common ATS parsers.",
+    tag: "Analyzer",
+  },
+  {
+    icon: Sparkles,
+    title: "Skill Suggestions",
+    description: "AI detects your role from your experience and suggests the most in-demand skills to add.",
+    tag: "Builder",
+  },
+  {
+    icon: BarChart3,
+    title: "Score Benchmarking",
+    description: "Your ATS score is benchmarked against real resumes for similar roles and experience levels.",
+    tag: "Analyzer",
+  },
+  {
+    icon: FileText,
+    title: "Roadmap Generation",
+    description: "A multi-step AI flow that understands your current level and generates a realistic path forward.",
+    tag: "Roadmap",
+  },
+  {
+    icon: Award,
+    title: "Career Milestones",
+    description: "Break down your career goal into actionable milestones with realistic time estimates.",
+    tag: "Roadmap",
+  },
+];
+
+const ACCENT_MAP: Record<string, { bg: string; text: string; border: string; tag: string }> = {
+  indigo: {
+    bg: "bg-indigo/10",
+    text: "text-indigo",
+    border: "border-indigo/20",
+    tag: "bg-indigo text-white",
+  },
+  teal: {
+    bg: "bg-teal/10",
+    text: "text-teal",
+    border: "border-teal/20",
+    tag: "bg-teal text-white",
+  },
+  coral: {
+    bg: "bg-coral/10",
+    text: "text-coral",
+    border: "border-coral/20",
+    tag: "bg-coral text-white",
+  },
+};
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-screen bg-[#EFE9E1]">
-      {/* Retro grid background */}
-      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
-        <div
-          className="absolute inset-0 opacity-[0.15]"
-          style={{ 
-            backgroundImage: "linear-gradient(#D4C5B3 1px, transparent 1px), linear-gradient(90deg, #D4C5B3 1px, transparent 1px)",
-            backgroundSize: "48px 48px"
-          }}
-        />
-      </div>
-
-      {/* Compact header */}
-      <section className="border-b-2 border-[#1C1C1C] py-12 sm:py-16 bg-[#EFE9E1]">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }} className="flex items-end justify-between">
-            <div>
-              <p className="mb-2 inline-block rounded-sm border-2 border-[#2F5233] bg-[#2F5233] px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#EFE9E1]">
-                Features
-              </p>
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-[#1C1C1C] sm:text-4xl" style={{ fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' }}>
-                Pick your tool. Start building.
-              </h1>
+    <div className="min-h-screen">
+      {/* Header */}
+      <section className="py-20 lg:py-28">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-3xl"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo/10 border border-indigo/20 mb-6">
+              <Sparkles className="w-3.5 h-3.5 text-indigo" />
+              <span className="text-xs font-medium text-indigo uppercase tracking-wider">Platform Features</span>
             </div>
-            <div className="hidden items-center gap-2 rounded-sm border-2 border-[#1C1C1C] bg-white px-4 py-2.5 shadow-[4px_4px_0px_0px_rgba(28,28,28,0.25)] sm:flex">
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_, i) => <Star key={i} className="size-3 fill-[#D4A574] text-[#D4A574]" />)}
-              </div>
-              <span className="text-sm font-semibold text-[#1C1C1C]">4.9</span>
-              <span className="text-sm text-[#6B5944]">· 18k reviews</span>
+            <h1 className="font-serif text-[clamp(2.5rem,5vw,4rem)] leading-[1.05] tracking-tight text-ink mb-5">
+              Everything you need to{" "}
+              <span className="italic text-indigo">land your next role</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl">
+              Three AI-powered tools in one platform — resume builder, ATS analyzer, and career roadmap.
+              Built to work together, designed to get you hired.
+            </p>
+
+            {/* Trust row */}
+            <div className="mt-8 flex flex-wrap gap-6 text-sm text-muted-foreground">
+              {[
+                { icon: CheckCircle2, text: "Free to start" },
+                { icon: Shield, text: "No credit card" },
+                { icon: Clock, text: "Results in minutes" },
+                { icon: Star, text: "4.9 · 18k reviews" },
+              ].map((item) => (
+                <span key={item.text} className="flex items-center gap-1.5">
+                  <item.icon className="w-4 h-4 text-indigo" />
+                  {item.text}
+                </span>
+              ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 3 Product cards */}
-      <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-3">
-            {[
-              { icon: FilePenLine, bg: "bg-[#3D5A40]", color: "text-[#EFE9E1]", headerBg: "bg-[#F5F1EB]",
-                title: "Resume Builder", desc: "Build ATS-optimized resumes with AI assistance. Choose from 20+ premium templates, get real-time feedback, and export in seconds.", href: "/tools/builder",
-                features: ["20+ ATS-ready templates", "AI bullet point enhancement", "Real-time ATS score", "PDF & DOCX export", "Section-by-section guidance", "Skills auto-suggestions"] },
-              { icon: ScanSearch, bg: "bg-[#5C4F3F]", color: "text-[#EFE9E1]", headerBg: "bg-[#F5F1EB]",
-                title: "ATS Analyzer", desc: "Upload your resume and get an instant score with actionable fixes. Know exactly what recruiters and ATS systems see.", href: "/tools/analyzer",
-                features: ["Instant ATS score (0–100)", "Keyword gap analysis", "Weak verb detection", "Formatting issue flags", "Job description matching", "AI fix suggestions"] },
-              { icon: Route, bg: "bg-[#8B4513]", color: "text-[#EFE9E1]", headerBg: "bg-[#F5F1EB]",
-                title: "Career Roadmap", desc: "Get a personalized, AI-generated learning path to your dream role. Every skill in the right order, with time estimates.", href: "/tools/roadmap",
-                features: ["Role-specific roadmaps", "AI skill ordering", "Time estimates per phase", "Resource recommendations", "Progress tracking", "Beginner to senior paths"] },
-            ].map((tool, i) => (
-              <FadeIn key={tool.title} delay={i * 0.08}>
-                <div className="group flex h-full flex-col overflow-hidden rounded-sm border-2 border-[#1C1C1C] bg-white shadow-[6px_6px_0px_0px_rgba(28,28,28,0.25)] transition-all duration-200 hover:shadow-[8px_8px_0px_0px_rgba(28,28,28,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                  <div className={`border-b-2 border-[#1C1C1C] ${tool.headerBg} p-8`}>
-                    <div className={`mb-5 inline-flex size-14 items-center justify-center rounded-sm border-2 border-[#1C1C1C] ${tool.bg}`}>
-                      <tool.icon className={`size-7 ${tool.color}`} />
+      {/* Tool Cards */}
+      <section className="pb-24">
+        <div className="mx-auto max-w-[1180px] px-6 space-y-8">
+          {TOOLS.map((tool, i) => {
+            const accent = ACCENT_MAP[tool.accent];
+            const Icon = tool.icon;
+            return (
+              <motion.div
+                key={tool.tag}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="tile overflow-hidden"
+              >
+                <div className="grid lg:grid-cols-[1fr_320px] gap-0">
+                  {/* Content */}
+                  <div className="p-8 lg:p-10">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className={`w-10 h-10 rounded-xl ${accent.bg} flex items-center justify-center`}>
+                        <Icon className={`w-5 h-5 ${accent.text}`} />
+                      </div>
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${accent.tag}`}>
+                        {tool.tag}
+                      </span>
                     </div>
-                    <h3 className="mb-3 text-xl font-bold text-[#1C1C1C]" style={{ fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' }}>
+
+                    <h2 className="font-serif text-2xl sm:text-3xl text-ink leading-tight mb-3">
                       {tool.title}
-                    </h3>
-                    <p className="text-sm leading-relaxed text-[#5C4F3F]">{tool.desc}</p>
+                    </h2>
+                    <p className="text-muted-foreground mb-6 max-w-lg">{tool.description}</p>
+
+                    <Link
+                      href={tool.href}
+                      className="btn-primary inline-flex"
+                    >
+                      {tool.cta}
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
-                  <div className="flex flex-1 flex-col bg-white p-8">
-                    <ul className="mb-8 flex-1 space-y-3">
+
+                  {/* Feature list */}
+                  <div className={`border-t lg:border-t-0 lg:border-l border-border ${accent.bg} p-8 lg:p-10`}>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                      What&apos;s included
+                    </p>
+                    <ul className="space-y-3">
                       {tool.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2.5 text-sm text-[#1C1C1C]">
-                          <CheckCircle2 className="size-4 shrink-0 text-[#2F5233]" />{f}
+                        <li key={f} className="flex items-start gap-2.5 text-sm text-ink">
+                          <CheckCircle2 className={`w-4 h-4 mt-0.5 flex-shrink-0 ${accent.text}`} />
+                          {f}
                         </li>
                       ))}
                     </ul>
-                    <Link href={tool.href}
-                      className="flex items-center justify-center gap-2 rounded-sm border-2 border-[#1C1C1C] bg-[#2F5233] py-3 text-sm font-bold text-[#EFE9E1] shadow-[4px_4px_0px_0px_rgba(28,28,28,0.25)] transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(28,28,28,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                      Try {tool.title} <ArrowRight className="size-4" />
-                    </Link>
                   </div>
                 </div>
-              </FadeIn>
-            ))}
-          </div>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* AI Features grid */}
-      <section className="py-16 sm:py-20 relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <FadeIn className="mb-12 text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-sm border-2 border-[#1C1C1C] bg-[#2F5233] px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-[#EFE9E1]">
-              <Brain className="size-3.5" /> AI-Powered
-            </span>
-            <h2 className="mt-6 text-3xl font-black tracking-tight text-[#1C1C1C] sm:text-4xl" style={{ fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif' }}>
-              AI that actually helps
+      {/* AI Features Grid */}
+      <section className="py-24 bg-paper/40 border-t border-border/40">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-12"
+          >
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
+              AI Capabilities
+            </div>
+            <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink">
+              Powered by advanced AI
             </h2>
-          </FadeIn>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { icon: Brain, bg: "bg-[#6B5944]", color: "text-[#EFE9E1]", title: "AI Bullet Enhancement",
-                desc: "Transform vague descriptions into powerful, quantified impact statements." },
-              { icon: Target, bg: "bg-[#5C4F3F]", color: "text-[#EFE9E1]", title: "Job Description Matching",
-                desc: "Paste any JD and get instant keyword gap analysis with suggestions." },
-              { icon: Code2, bg: "bg-[#D4A574]", color: "text-[#1C1C1C]", title: "Skills Auto-Suggest",
-                desc: "AI detects your role and suggests in-demand skills to add." },
-              { icon: GraduationCap, bg: "bg-[#3D5A40]", color: "text-[#EFE9E1]", title: "Personalized Roadmaps",
-                desc: "Step-by-step learning path based on your skills and target role." },
-              { icon: Briefcase, bg: "bg-[#A0522D]", color: "text-[#EFE9E1]", title: "Interview Prep",
-                desc: "Get likely interview questions based on your resume." },
-              { icon: Sparkles, bg: "bg-[#2F5233]", color: "text-[#EFE9E1]", title: "Smart Summary",
-                desc: "Generate compelling professional summary in one click." },
-            ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.05}>
-                <div className="rounded-sm border-2 border-[#1C1C1C] bg-white p-6 shadow-[4px_4px_0px_0px_rgba(28,28,28,0.2)] transition-all duration-200 hover:shadow-[6px_6px_0px_0px_rgba(28,28,28,0.25)] hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                  <div className={`mb-4 inline-flex size-11 items-center justify-center rounded-sm border-2 border-[#1C1C1C] ${item.bg}`}>
-                    <item.icon className={`size-5 ${item.color}`} />
+            <p className="mt-3 max-w-xl text-muted-foreground">
+              Every feature is designed to give your application an edge — from the first scan to the final offer.
+            </p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {AI_FEATURES.map((feature, i) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                  className="tile p-6 hover:-translate-y-1 hover:shadow-float transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-indigo/10 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-indigo" />
+                    </div>
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                      {feature.tag}
+                    </span>
                   </div>
-                  <h3 className="mb-2 text-base font-bold text-[#1C1C1C]">{item.title}</h3>
-                  <p className="text-sm text-[#5C4F3F]">{item.desc}</p>
-                </div>
-              </FadeIn>
-            ))}
+                  <h3 className="font-semibold text-ink mb-1.5">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Trust indicators */}
-      <section className="border-t-2 border-[#1C1C1C] bg-[#F5F1EB] py-12">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            {[
-              { icon: CheckCircle2, color: "text-[#2F5233]", text: "Free to start" },
-              { icon: Shield, color: "text-[#5C4F3F]", text: "No credit card" },
-              { icon: Clock, color: "text-[#D4A574]", text: "Results in minutes" },
-              { icon: Users, color: "text-[#3D5A40]", text: "120k+ users" },
-            ].map((item) => (
-              <span key={item.text} className="flex items-center gap-2 text-sm font-semibold text-[#1C1C1C]">
-                <item.icon className={`size-4 ${item.color}`} />
-                {item.text}
-              </span>
-            ))}
+      {/* CTA */}
+      <section className="py-24">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="tile p-12 lg:p-16 text-center bg-gradient-to-br from-indigo/5 via-paper to-mint/10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo to-indigo/80 text-white shadow-soft mb-6">
+                <Zap className="w-7 h-7" />
+              </div>
+              <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink mb-4">
+                Start building your career today
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto mb-8">
+                Join 50,000+ professionals who used NextCareer AI to land their dream roles.
+                Free to start, no credit card required.
+              </p>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <Link href="/tools/builder/templates" className="btn-primary text-base px-8 h-12 inline-flex items-center gap-2">
+                  Build My Resume
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link href="/tools/analyzer" className="btn-ghost text-base px-8 h-12 inline-flex items-center gap-2">
+                  Analyze Existing Resume
+                </Link>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
