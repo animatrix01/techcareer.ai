@@ -1,36 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TechCareer.AI
 
-## Getting Started
+An AI-powered career platform that helps job seekers build ATS-optimized resumes, analyze their job readiness, and create personalized career roadmaps. Built with Next.js 15, TypeScript, and modern AI technology.
 
-First, run the development server:
+## What It Does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+TechCareer.AI is an all-in-one career development platform featuring three core tools. The Resume Builder offers 20+ professionally designed, ATS-optimized templates with AI-powered content suggestions that help users create compelling resumes. The Resume Analyzer provides instant feedback on ATS compatibility, keyword optimization, and content quality with actionable insights. The Career Roadmap Builder generates personalized learning paths based on career goals, identifies skill gaps, and tracks progress over time.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technology
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Built with Next.js 15 and TypeScript for a fast, type-safe experience. Uses Tailwind CSS 4 and Framer Motion for a modern, animated interface. Authentication powered by Clerk, with data stored in Neon PostgreSQL using Drizzle ORM. Features custom AI integration for intelligent content generation and career guidance.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create professional resumes with drag-and-drop editing, real-time preview, and one-click PDF export. Upload existing resumes for smart parsing and editing. Get detailed ATS scoring with specific improvement recommendations. Generate AI-powered career roadmaps with personalized learning resources and milestone tracking. All tools work together seamlessly in a responsive, mobile-friendly interface.
