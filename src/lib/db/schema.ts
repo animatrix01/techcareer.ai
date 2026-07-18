@@ -26,7 +26,6 @@ export const resumes = pgTable("resumes", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   resumeId: text("resume_id").notNull().unique(),
-  userEmail: text("user_email").notNull(),
   createdBy: text("created_by").notNull(),
   userName: text("user_name"),
   template: text("template").default("modern"),
@@ -43,6 +42,8 @@ export const resumes = pgTable("resumes", {
   experience: jsonb("experience"),
   education: jsonb("education"),
   skills: jsonb("skills"),
+  projects: jsonb("projects"),
+  certifications: jsonb("certifications"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

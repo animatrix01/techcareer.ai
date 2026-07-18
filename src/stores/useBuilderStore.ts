@@ -25,6 +25,33 @@ export type BuilderTemplateId =
   | "consultant-pro"
   | "founder-resume";
 
+export type SkillCategory = 
+  | "programming"
+  | "frameworks"
+  | "databases"
+  | "cloud"
+  | "devops"
+  | "tools"
+  | "softSkills"
+  | "languages";
+
+export type CategorizedSkills = {
+  [K in SkillCategory]: string[]; // Array of skill names
+};
+
+export type EmploymentType = 
+  | "full-time"
+  | "part-time"
+  | "internship"
+  | "contract"
+  | "freelance"
+  | "volunteer";
+
+export type WorkMode = 
+  | "remote"
+  | "hybrid"
+  | "onsite";
+
 export type ResumeBuilderData = {
   basics: {
     fullName: string;
@@ -35,29 +62,59 @@ export type ResumeBuilderData = {
     location: string;
     summary: string;
   };
-  /** Comma-separated skills for smooth single-field typing */
-  skills: string;
+  /** Categorized skills with chips */
+  skills: CategorizedSkills;
   experience: Array<{
     id: string;
     company: string;
     role: string;
+    companyWebsite: string;
+    location: string;
+    employmentType: EmploymentType;
+    workMode: WorkMode;
     startDate: string;
     endDate: string;
+    currentlyWorking: boolean;
     description: string;
+    achievements: string;
+    technologies: string[]; // Array of tech used
+    teamSize: string;
+    projectName: string;
+    client: string;
+    industry: string;
+  }>;
+  certifications: Array<{
+    id: string;
+    name: string;
+    issuer: string;
+    issueDate: string;
+    expiryDate: string;
+    credentialId: string;
+    credentialUrl: string;
   }>;
   education: Array<{
     id: string;
     institution: string;
     degree: string;
+    fieldOfStudy: string;
+    city: string;
     startDate: string;
     endDate: string;
+    currentlyStudying: boolean;
+    gpa: string;
+    description: string; // honors, activities, relevant coursework
   }>;
   projects: Array<{
     id: string;
     name: string;
+    role: string;
+    techStack: string; // Comma-separated or chip-based
+    githubUrl: string;
+    liveUrl: string;
+    startDate: string;
+    endDate: string;
     description: string;
-    url: string;
-    stack: string;
+    achievements: string;
   }>;
 };
 
@@ -76,7 +133,9 @@ type BuilderStore = {
   setTemplate: (template: BuilderTemplateId) => void;
   setThemeColor: (color: string) => void;
   updateBasics: (data: Partial<ResumeBuilderData["basics"]>) => void;
-  setSkills: (skills: string) => void;
+  addSkill: (category: SkillCategory, skill: string) => void;
+  removeSkill: (category: SkillCategory, skill: string) => void;
+  updateSkillCategory: (category: SkillCategory, skills: string[]) => void;
   addExperience: () => void;
   removeExperience: (id: string) => void;
   updateExperience: (
@@ -84,11 +143,18 @@ type BuilderStore = {
     patch: Partial<ResumeBuilderData["experience"][number]>,
   ) => void;
   reorderExperience: (fromIndex: number, toIndex: number) => void;
+  duplicateExperience: (id: string) => void;
   addEducation: () => void;
   removeEducation: (id: string) => void;
   updateEducation: (
     id: string,
     patch: Partial<ResumeBuilderData["education"][number]>,
+  ) => void;
+  addCertification: () => void;
+  removeCertification: (id: string) => void;
+  updateCertification: (
+    id: string,
+    patch: Partial<ResumeBuilderData["certifications"][number]>,
   ) => void;
   addProject: () => void;
   removeProject: (id: string) => void;
@@ -114,9 +180,19 @@ const initialResumeState: ResumeBuilderData = {
     location: "",
     summary: "",
   },
-  skills: "",
+  skills: {
+    programming: [],
+    frameworks: [],
+    databases: [],
+    cloud: [],
+    devops: [],
+    tools: [],
+    softSkills: [],
+    languages: [],
+  },
   experience: [],
   education: [],
+  certifications: [],
   projects: [],
 };
 
@@ -152,13 +228,16 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
         template,
       },
     })),
-  setThemeColor: (themeColor) =>
+  setThemeColor: (themeColor) => {
+    // Silently reject anything that isn't a valid 6-digit hex color
+    if (!/^#[0-9A-Fa-f]{6}$/.test(themeColor)) return;
     set((state) => ({
       design: {
         ...state.design,
         themeColor,
       },
-    })),
+    }));
+  },
   updateBasics: (data) =>
     set((state) => ({
       resume: {
@@ -169,9 +248,35 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
         },
       },
     })),
-  setSkills: (skills) =>
+  addSkill: (category, skill) =>
     set((state) => ({
-      resume: { ...state.resume, skills },
+      resume: {
+        ...state.resume,
+        skills: {
+          ...state.resume.skills,
+          [category]: [...(state.resume.skills[category] || []), skill],
+        },
+      },
+    })),
+  removeSkill: (category, skill) =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        skills: {
+          ...state.resume.skills,
+          [category]: (state.resume.skills[category] || []).filter((s) => s !== skill),
+        },
+      },
+    })),
+  updateSkillCategory: (category, skills) =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        skills: {
+          ...state.resume.skills,
+          [category]: skills,
+        },
+      },
     })),
   addExperience: () =>
     set((state) => ({
@@ -183,9 +288,20 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
             id: newId(),
             company: "",
             role: "",
+            companyWebsite: "",
+            location: "",
+            employmentType: "full-time" as EmploymentType,
+            workMode: "onsite" as WorkMode,
             startDate: "",
             endDate: "",
+            currentlyWorking: false,
             description: "",
+            achievements: "",
+            technologies: [],
+            teamSize: "",
+            projectName: "",
+            client: "",
+            industry: "",
           },
         ],
       },
@@ -213,6 +329,27 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
         experience: arrayMove(state.resume.experience, fromIndex, toIndex),
       },
     })),
+  duplicateExperience: (id: string) =>
+    set((state) => {
+      const original = state.resume.experience.find((e) => e.id === id);
+      if (!original) return state;
+      
+      const duplicate = {
+        ...original,
+        id: newId(),
+      };
+      
+      const index = state.resume.experience.findIndex((e) => e.id === id);
+      const newExperience = [...state.resume.experience];
+      newExperience.splice(index + 1, 0, duplicate);
+      
+      return {
+        resume: {
+          ...state.resume,
+          experience: newExperience,
+        },
+      };
+    }),
   addEducation: () =>
     set((state) => ({
       resume: {
@@ -223,8 +360,13 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
             id: newId(),
             institution: "",
             degree: "",
+            fieldOfStudy: "",
+            city: "",
             startDate: "",
             endDate: "",
+            currentlyStudying: false,
+            gpa: "",
+            description: "",
           },
         ],
       },
@@ -245,6 +387,40 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
         ),
       },
     })),
+  addCertification: () =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        certifications: [
+          ...(state.resume.certifications || []),
+          {
+            id: newId(),
+            name: "",
+            issuer: "",
+            issueDate: "",
+            expiryDate: "",
+            credentialId: "",
+            credentialUrl: "",
+          },
+        ],
+      },
+    })),
+  removeCertification: (id) =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        certifications: (state.resume.certifications || []).filter((c) => c.id !== id),
+      },
+    })),
+  updateCertification: (id, patch) =>
+    set((state) => ({
+      resume: {
+        ...state.resume,
+        certifications: (state.resume.certifications || []).map((c) =>
+          c.id === id ? { ...c, ...patch } : c,
+        ),
+      },
+    })),
   addProject: () =>
     set((state) => ({
       resume: {
@@ -254,9 +430,14 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
           {
             id: newId(),
             name: "",
+            role: "",
+            techStack: "",
+            githubUrl: "",
+            liveUrl: "",
+            startDate: "",
+            endDate: "",
             description: "",
-            url: "",
-            stack: "",
+            achievements: "",
           },
         ],
       },

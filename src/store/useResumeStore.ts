@@ -24,12 +24,21 @@ interface EducationItem {
   endDate: string;
 }
 
+interface CertificationItem {
+  name: string;
+  issuer: string;
+  dateObtained: string;
+  expiryDate?: string;
+  credentialId?: string;
+}
+
 export interface ResumeData {
   title: string;
   personalInfo: PersonalInfo;
   experience: ExperienceItem[];
   education: EducationItem[];
   skills: string[];
+  certifications: CertificationItem[];
 }
 
 interface ResumeStore extends ResumeData {
@@ -42,6 +51,9 @@ interface ResumeStore extends ResumeData {
   removeEducation: (index: number) => void;
   addSkill: (skill: string) => void;
   removeSkill: (index: number) => void;
+  addCertification: (cert: CertificationItem) => void;
+  updateCertification: (index: number, data: Partial<CertificationItem>) => void;
+  removeCertification: (index: number) => void;
 }
 
 const defaultResumeData: ResumeData = {
@@ -56,6 +68,7 @@ const defaultResumeData: ResumeData = {
   experience: [],
   education: [],
   skills: [],
+  certifications: [],
 };
 
 export const useResumeStore = create<ResumeStore>((set) => ({
@@ -102,5 +115,19 @@ export const useResumeStore = create<ResumeStore>((set) => ({
   removeSkill: (index) =>
     set((state) => ({
       skills: state.skills.filter((_, idx) => idx !== index),
+    })),
+  addCertification: (cert) =>
+    set((state) => ({
+      certifications: [...state.certifications, cert],
+    })),
+  updateCertification: (index, data) =>
+    set((state) => ({
+      certifications: state.certifications.map((item, idx) =>
+        idx === index ? { ...item, ...data } : item,
+      ),
+    })),
+  removeCertification: (index) =>
+    set((state) => ({
+      certifications: state.certifications.filter((_, idx) => idx !== index),
     })),
 }));

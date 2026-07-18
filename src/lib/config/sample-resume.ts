@@ -1,1082 +1,318 @@
 ﻿import type { ResumeBuilderData } from "@/stores/useBuilderStore";
 
-/** Sample resume data used for live template previews in the gallery. */
-export const SAMPLE_RESUME: ResumeBuilderData = {
-  basics: {
-    fullName: "Alex Rivera",
-    jobTitle: "Senior Software Engineer",
-    email: "alex@example.com",
-    phone: "+1 555 0123",
-    location: "San Francisco, CA",
-    summary:
-      "Experienced software engineer with 6+ years building scalable web applications. Passionate about clean architecture, developer experience, and shipping products users love.",
-  },
-  skills: "TypeScript, React, Node.js, PostgreSQL, AWS, Docker, GraphQL, System Design",
-  experience: [
-    {
-      id: "1",
-      company: "Acme Corp",
-      role: "Senior Software Engineer",
-      startDate: "2021-03",
-      endDate: "Present",
-      description:
-        "<ul><li>Led migration of monolith to microservices, reducing deploy time by 60%</li><li>Mentored 4 junior engineers and established code review standards</li></ul>",
-    },
-    {
-      id: "2",
-      company: "StartupXYZ",
-      role: "Full Stack Developer",
-      startDate: "2018-06",
-      endDate: "2021-02",
-      description:
-        "<ul><li>Built core product features used by 50k+ monthly active users</li><li>Improved API response time by 40% through query optimization</li></ul>",
-    },
-  ],
-  education: [
-    {
-      id: "1",
-      institution: "UC Berkeley",
-      degree: "B.S. Computer Science",
-      startDate: "2014-09",
-      endDate: "2018-05",
-    },
-  ],
-  projects: [
-    {
-      id: "1",
-      name: "OpenMetrics",
-      description: "Open-source observability platform with 2k+ GitHub stars",
-      url: "https://github.com",
-      stack: "Go, Prometheus, React",
-    },
-  ],
-};
+// ─── Shared helpers ───────────────────────────────────────────────────────────
 
-/** Diverse sample profiles for template previews - creates realistic marketplace feel */
+const make = (
+  fullName: string,
+  jobTitle: string,
+  email: string,
+  phone: string,
+  location: string,
+  summary: string,
+  skills: ResumeBuilderData["skills"],
+  experience: ResumeBuilderData["experience"],
+  education: ResumeBuilderData["education"],
+  projects: ResumeBuilderData["projects"],
+): ResumeBuilderData => ({
+  basics: { fullName, jobTitle, email, phone, location, summary },
+  skills,
+  experience,
+  education,
+  projects,
+  certifications: [],
+});
+
+// ─── Shared sub-data ─────────────────────────────────────────────────────────
+
+const twoJobs = (role1: string, co1: string, role2: string, co2: string): ResumeBuilderData["experience"] => [
+  {
+    id: "1", company: co1, role: role1, companyWebsite: "", location: "San Francisco, CA",
+    employmentType: "full-time", workMode: "hybrid", startDate: "2021-03", endDate: "",
+    currentlyWorking: true,
+    description: `<ul><li>Led development of core platform features serving 200k+ monthly active users across web and mobile surfaces, collaborating closely with product and design</li><li>Architected and delivered a microservices migration reducing average API latency from 480ms to 95ms — a 5× improvement enabling the company to hit SLA targets</li><li>Designed and implemented automated CI/CD pipelines cutting release cycle from 2 weeks to 2 days and reducing production incidents by 60%</li><li>Mentored 4 junior engineers through structured 1:1s, code reviews, and design sessions; two received promotions within the year</li></ul>`,
+    achievements: "Reduced infrastructure costs by $180k annually through spot instance optimization and unused resource cleanup. Named internal Tech Lead of the Quarter.",
+    technologies: ["React", "Node.js", "PostgreSQL", "AWS", "Docker"], teamSize: "8", projectName: "", client: "", industry: "SaaS",
+  },
+  {
+    id: "2", company: co2, role: role2, companyWebsite: "", location: "Remote",
+    employmentType: "full-time", workMode: "remote", startDate: "2018-06", endDate: "2021-02",
+    currentlyWorking: false,
+    description: `<ul><li>Built and shipped 3 major product features — notifications engine, activity feed, and onboarding flow — adopted by 50k+ users within the first month</li><li>Improved core API response time by 40% through database query optimization, connection pooling, and strategic caching layer introduction</li><li>Collaborated with cross-functional teams across design, data, and mobile to define technical requirements and deliver milestones on schedule</li><li>Wrote comprehensive unit and integration test suite raising coverage from 42% to 91%, eliminating entire classes of regression bugs</li></ul>`,
+    achievements: "Promoted to tech lead within 18 months. Led post-mortems that reduced P1 incident recurrence by 75%.",
+    technologies: ["Vue.js", "Python", "MySQL", "Redis", "Docker"], teamSize: "5", projectName: "", client: "", industry: "Technology",
+  },
+];
+
+const oneEdu = (degree: string, institution: string, city: string, gpa?: string): ResumeBuilderData["education"] => [
+  {
+    id: "1", institution, degree, fieldOfStudy: "Computer Science", city,
+    startDate: "2014-09", endDate: "2018-05", currentlyStudying: false,
+    gpa: gpa || "3.8",
+    description: "Dean's List all semesters. Relevant coursework: Data Structures & Algorithms, Operating Systems, Database Systems, Distributed Computing, Software Engineering. Teaching Assistant for Algorithms (2017).",
+  },
+];
+
+const oneProject = (name: string, stack: string): ResumeBuilderData["projects"] => [
+  {
+    id: "1", name, role: "Creator & Maintainer", techStack: stack,
+    githubUrl: "https://github.com/sample/project", liveUrl: "https://project.dev",
+    startDate: "2022-01", endDate: "2023-06",
+    description: "Open-source developer tool with 2,400+ GitHub stars and 500+ weekly active users across 40 countries. Built as a side project to solve a real pain point in the ecosystem.",
+    achievements: "Featured in GitHub Trending for 3 consecutive days. Reached 10k npm downloads within first 3 months. Integrated by 4 Fortune 500 companies.",
+  },
+  {
+    id: "2", name: "PersonalSite", role: "Developer", techStack: "Next.js, Tailwind CSS, Vercel",
+    githubUrl: "https://github.com/sample/personalsite", liveUrl: "https://mysite.dev",
+    startDate: "2023-01", endDate: "2023-03",
+    description: "Personal portfolio and blog with custom CMS, dark mode, and sub-100ms load times globally via edge deployment.",
+    achievements: "99/100 Lighthouse performance score. 2k+ monthly visitors.",
+  },
+];
+
+// ─── 20 unique American profiles ─────────────────────────────────────────────
+
+// 1. modern — Senior Software Engineer
+const modernProfile = make(
+  "James Carter", "Senior Software Engineer", "james.carter@email.com", "+1 415 555 0192", "San Francisco, CA",
+  "Senior software engineer with 7+ years building scalable web applications and distributed systems. Passionate about clean architecture, developer experience, and leading high-impact engineering teams. Proven track record shipping products from 0 to 1 and scaling them to millions of users.",
+  { programming: ["TypeScript", "Python", "Go", "Java"], frameworks: ["React", "Node.js", "Next.js", "GraphQL"], databases: ["PostgreSQL", "Redis", "MongoDB"], cloud: ["AWS", "GCP", "Docker", "Kubernetes"], devops: ["CI/CD", "Terraform", "GitHub Actions"], tools: ["Figma", "Linear", "Datadog"], softSkills: ["Technical Leadership", "Mentoring"], languages: ["English"] },
+  twoJobs("Senior Software Engineer", "Stripe", "Software Engineer", "Lyft"),
+  oneEdu("B.S. Computer Science", "UC Berkeley", "Berkeley, CA", "3.9"),
+  oneProject("FlowMetrics", "Go, Prometheus, React, PostgreSQL"),
+);
+
+// 2. classic — Marketing Director
+const classicProfile = make(
+  "Emily Harrington", "Marketing Director", "emily.harrington@email.com", "+1 212 555 0348", "New York, NY",
+  "Results-driven marketing director with 10+ years driving brand growth and revenue for Fortune 500 companies. Led campaigns generating $120M+ in pipeline. Expert in digital strategy, content marketing, demand generation, and building high-performing creative teams. MBA from Northwestern Kellogg.",
+  { programming: [], frameworks: [], databases: [], cloud: [], devops: [], tools: ["HubSpot", "Salesforce", "Marketo", "Google Analytics", "Tableau", "Figma"], softSkills: ["Executive Leadership", "Brand Strategy", "Team Building", "Stakeholder Management"], languages: ["English", "French"] },
+  twoJobs("Marketing Director", "Verizon", "Sr. Marketing Manager", "Nielsen"),
+  oneEdu("M.B.A. Marketing", "Northwestern University (Kellogg)", "Evanston, IL"),
+  oneProject("CampaignOS", "HubSpot API, React, Salesforce"),
+);
+
+// 3. executive — Chief Technology Officer
+const executiveProfile = make(
+  "Robert Whitfield", "Chief Technology Officer", "r.whitfield@email.com", "+1 650 555 0215", "Palo Alto, CA",
+  "Visionary CTO with 15+ years scaling engineering organizations from 10 to 300+ engineers. Delivered 4 successful IPOs and managed $200M+ technology budgets. Deep expertise in distributed systems, cloud architecture, and building engineering culture. Board advisor to 3 Series B startups.",
+  { programming: ["Python", "Go", "Java", "SQL"], frameworks: ["gRPC", "Spring Boot"], databases: ["PostgreSQL", "Cassandra", "Redis"], cloud: ["AWS", "GCP", "Azure"], devops: ["Kubernetes", "Terraform", "CI/CD"], tools: ["Jira", "Confluence", "Datadog"], softSkills: ["Executive Leadership", "Org Scaling", "Technical Vision", "Hiring"], languages: ["English"] },
+  twoJobs("Chief Technology Officer", "Palantir", "VP of Engineering", "Salesforce"),
+  oneEdu("M.S. Computer Science", "Stanford University", "Stanford, CA", "4.0"),
+  oneProject("InfraScale", "Terraform, Kubernetes, Go, Prometheus"),
+);
+
+// 4. innovator — Product Manager
+const innovatorProfile = make(
+  "Samantha Brooks", "Senior Product Manager", "sam.brooks@email.com", "+1 206 555 0174", "Seattle, WA",
+  "Strategic product manager with 6+ years turning complex customer problems into elegant, high-impact products. Shipped 12+ major features used by 5M+ users at Amazon and Twilio. Strong data intuition, deep customer empathy, and experience driving 0-to-1 product development from discovery through launch.",
+  { programming: ["SQL", "Python"], frameworks: [], databases: [], cloud: [], devops: [], tools: ["Jira", "Figma", "Amplitude", "Mixpanel", "Notion", "Looker"], softSkills: ["Product Strategy", "Cross-functional Leadership", "User Research", "Roadmapping"], languages: ["English", "Spanish"] },
+  twoJobs("Senior Product Manager", "Amazon", "Product Manager", "Twilio"),
+  oneEdu("B.S. Business Administration", "University of Washington", "Seattle, WA"),
+  oneProject("ProductPulse", "React, SQL, Amplitude, Figma"),
+);
+
+// 5. minimalist — Data Scientist
+const minimalistProfile = make(
+  "Nathan Pierce", "Senior Data Scientist", "n.pierce@email.com", "+1 617 555 0291", "Boston, MA",
+  "Data scientist specializing in NLP, forecasting, and production ML systems. Published 3 peer-reviewed papers at NeurIPS and EMNLP. 5+ years building ML pipelines that directly drive business outcomes — from fraud detection to personalization engines serving 10M+ users daily.",
+  { programming: ["Python", "R", "SQL", "Scala"], frameworks: ["PyTorch", "TensorFlow", "scikit-learn", "Spark", "dbt"], databases: ["PostgreSQL", "MongoDB", "Snowflake"], cloud: ["AWS", "SageMaker", "Databricks"], devops: ["Docker", "Airflow"], tools: ["Jupyter", "Tableau", "MLflow"], softSkills: ["Research Communication", "Stakeholder Collaboration"], languages: ["English"] },
+  twoJobs("Senior Data Scientist", "HubSpot", "Data Scientist", "Wayfair"),
+  oneEdu("M.S. Statistics & ML", "MIT", "Cambridge, MA", "3.95"),
+  oneProject("SentimentGraph", "Python, PyTorch, FastAPI, PostgreSQL"),
+);
+
+// 6. ats-minimal — Software Engineer
+const atsMinimalProfile = make(
+  "Jessica Morgan", "Software Engineer", "jessica.morgan@email.com", "+1 512 555 0188", "Austin, TX",
+  "Full-stack software engineer with 4+ years delivering reliable, high-quality web applications. Experienced across the entire development lifecycle from architecture decisions to deployment. Strong advocate for test-driven development, clean code, and accessible UI. Previously led a team of 3 at HomeAway.",
+  { programming: ["JavaScript", "TypeScript", "Python"], frameworks: ["React", "Express", "Next.js", "Jest"], databases: ["PostgreSQL", "Redis"], cloud: ["AWS", "Vercel"], devops: ["Docker", "GitHub Actions", "CI/CD"], tools: ["VS Code", "Linear"], softSkills: [], languages: [] },
+  twoJobs("Software Engineer", "Indeed", "Junior Developer", "HomeAway"),
+  oneEdu("B.S. Computer Science", "University of Texas at Austin", "Austin, TX", "3.7"),
+  oneProject("QuickAPI", "Node.js, TypeScript, PostgreSQL, Redis"),
+);
+
+// 7. ats-compact — DevOps Engineer
+const atsCompactProfile = make(
+  "Marcus Johnson", "Senior DevOps Engineer", "marcus.johnson@email.com", "+1 303 555 0267", "Denver, CO",
+  "Senior DevOps engineer with 5+ years building and owning cloud infrastructure for high-growth SaaS companies. Reduced deployment frequency from weekly to 50+ deploys/day. Expert in Kubernetes, Terraform, and GitOps workflows. Strong background in SRE practices and on-call runbooks.",
+  { programming: ["Python", "Bash", "Go"], frameworks: [], databases: ["PostgreSQL", "MySQL"], cloud: ["AWS", "GCP", "Azure"], devops: ["Kubernetes", "Terraform", "Jenkins", "Docker", "Helm", "Ansible"], tools: ["Datadog", "PagerDuty", "Grafana"], softSkills: ["Incident Management", "On-call Leadership"], languages: [] },
+  twoJobs("Senior DevOps Engineer", "SendGrid", "Cloud Engineer", "Ping Identity"),
+  oneEdu("B.S. Information Technology", "Colorado State University", "Fort Collins, CO", "3.6"),
+  oneProject("PipelineKit", "Python, Terraform, GitHub Actions, AWS"),
+);
+
+// 8. startup-bold — Full Stack Developer
+const startupBoldProfile = make(
+  "Tyler Anderson", "Full Stack Developer", "tyler.anderson@email.com", "+1 415 555 0344", "San Jose, CA",
+  "Full-stack developer obsessed with fast shipping, clean code, and great user experiences. 5 years building 0-to-1 products at Series A–C startups. Comfortable owning an entire product surface area solo or leading a squad of 10. Strong opinions on TypeScript, testing, and developer tooling.",
+  { programming: ["TypeScript", "Python", "JavaScript"], frameworks: ["Next.js", "FastAPI", "React", "tRPC"], databases: ["PostgreSQL", "Redis", "Supabase"], cloud: ["Vercel", "AWS", "Railway"], devops: ["Docker", "GitHub Actions"], tools: ["Linear", "Figma", "Notion"], softSkills: ["Ownership Mentality", "Fast Iteration"], languages: [] },
+  twoJobs("Full Stack Developer", "Rippling", "Software Engineer", "Brex"),
+  oneEdu("B.S. Computer Science", "San Jose State University", "San Jose, CA", "3.6"),
+  oneProject("ShipKit", "Next.js, TypeScript, Stripe, PostgreSQL"),
+);
+
+// 9. creative-sidebar — UX Designer
+const creativeSidebarProfile = make(
+  "Olivia Bennett", "Senior UX Designer", "olivia.bennett@email.com", "+1 323 555 0219", "Los Angeles, CA",
+  "Senior UX designer with 6+ years crafting intuitive digital products for consumer apps and enterprise platforms. Design systems advocate who shipped the first cohesive design system at Snap. Previously led design at two Y Combinator startups from 0 to Series B. Passionate about accessibility and inclusive design.",
+  { programming: [], frameworks: [], databases: [], cloud: [], devops: [], tools: ["Figma", "Principle", "Maze", "Zeplin", "Framer", "Storybook", "Hotjar"], softSkills: ["User Research", "Storytelling", "Design Critique", "Stakeholder Alignment"], languages: ["English", "French"] },
+  twoJobs("Senior UX Designer", "Snap Inc.", "UX Designer", "VSCO"),
+  oneEdu("B.F.A. Interaction Design", "ArtCenter College of Design", "Pasadena, CA"),
+  oneProject("DesignOS", "Figma, Storybook, React, Chromatic"),
+);
+
+// 10. professional-clean — Financial Analyst
+const professionalCleanProfile = make(
+  "Catherine Walsh", "Senior Financial Analyst", "c.walsh@email.com", "+1 212 555 0338", "New York, NY",
+  "CFA charterholder with 8+ years in investment banking, M&A advisory, and corporate FP&A. Closed $2B+ in transactions. Expert financial modeler with deep experience in LBO, DCF, and comparable company analysis. Strong communicator who translates complex financial data into executive-ready narratives.",
+  { programming: ["Python", "SQL", "VBA", "R"], frameworks: [], databases: [], cloud: [], devops: [], tools: ["Bloomberg Terminal", "FactSet", "Excel", "Tableau", "PowerPoint", "Argus"], softSkills: ["Executive Presentation", "Stakeholder Management", "Analytical Thinking"], languages: ["English", "Spanish"] },
+  twoJobs("Senior Financial Analyst", "Goldman Sachs", "Financial Analyst", "JPMorgan Chase"),
+  oneEdu("B.S. Finance", "New York University (Stern)", "New York, NY", "3.8"),
+  oneProject("ValuationModel", "Python, Excel, Pandas, openpyxl"),
+);
+
+// 11. tech-focused — Backend Engineer
+const techFocusedProfile = make(
+  "Daniel Rivera", "Senior Backend Engineer", "daniel.rivera@email.com", "+1 408 555 0172", "San Jose, CA",
+  "Backend engineer specializing in high-throughput distributed systems and API infrastructure. Designed and maintained APIs handling 10M+ requests/day at Cloudflare with 99.99% uptime. Go and Rust expert. Deeply familiar with systems-level performance optimization, database internals, and reliable service design.",
+  { programming: ["Go", "Rust", "Python", "C++"], frameworks: ["gRPC", "FastAPI", "Gin"], databases: ["PostgreSQL", "Cassandra", "Redis", "ClickHouse"], cloud: ["AWS", "Cloudflare Workers", "GCP"], devops: ["Kubernetes", "Docker", "Terraform", "Prometheus"], tools: ["Grafana", "DataDog", "PagerDuty"], softSkills: ["Systems Design", "Technical Documentation"], languages: [] },
+  twoJobs("Senior Backend Engineer", "Cloudflare", "Backend Engineer", "Fastly"),
+  oneEdu("B.S. Computer Engineering", "Santa Clara University", "Santa Clara, CA", "3.8"),
+  oneProject("EdgeRouter", "Go, gRPC, Redis, Kubernetes"),
+);
+
+// 12. designer-split — Brand Designer
+const designerSplitProfile = make(
+  "Megan Foster", "Senior Brand Designer", "megan.foster@email.com", "+1 213 555 0291", "Los Angeles, CA",
+  "Senior brand designer with 5+ years building cohesive visual identities for tech companies, consumer brands, and global NGOs. Led rebrands for 3 companies that resulted in measurable improvements in brand recall and conversion. Strong collaborator who works closely with marketing and product to ensure design consistency at scale.",
+  { programming: [], frameworks: [], databases: [], cloud: [], devops: [], tools: ["Figma", "Adobe Illustrator", "Photoshop", "After Effects", "InDesign", "Framer"], softSkills: ["Creative Direction", "Stakeholder Presentations", "Brand Strategy", "Team Leadership"], languages: ["English"] },
+  twoJobs("Senior Brand Designer", "Notion", "Brand Designer", "Headspace"),
+  oneEdu("B.F.A. Graphic Design", "California Institute of the Arts", "Valencia, CA"),
+  oneProject("BrandVault", "Figma, React, Storybook, CSS"),
+);
+
+// 13. ats-elegant — Consulting Manager
+const atsElegantProfile = make(
+  "William Clarke", "Consulting Manager", "william.clarke@email.com", "+1 312 555 0185", "Chicago, IL",
+  "Management consulting manager with 9+ years at McKinsey and Accenture leading high-stakes digital transformation engagements. Managed teams of up to 15 consultants. Clients include 3 Fortune 50 CEOs. Deep expertise in operating model design, data strategy, and change management across healthcare, retail, and financial services.",
+  { programming: ["SQL", "Python", "R"], frameworks: [], databases: [], cloud: [], devops: [], tools: ["PowerPoint", "Tableau", "Excel", "Miro", "Salesforce", "Looker"], softSkills: ["Strategic Thinking", "Executive Communication", "Team Leadership", "Client Management", "Workshop Facilitation"], languages: ["English", "Spanish"] },
+  twoJobs("Consulting Manager", "McKinsey & Company", "Senior Consultant", "Accenture"),
+  oneEdu("M.B.A.", "University of Chicago (Booth)", "Chicago, IL", "3.9"),
+  oneProject("TransformHub", "Python, Tableau, SQL, Snowflake"),
+);
+
+// 14. gradient-pro — Mobile Developer
+const gradientProProfile = make(
+  "Ashley Turner", "Senior iOS Developer", "ashley.turner@email.com", "+1 310 555 0241", "Los Angeles, CA",
+  "Senior iOS developer with 6+ years shipping polished, high-performance apps with millions of downloads on the App Store. SwiftUI and UIKit expert with strong eye for interaction design and animations. Experience owning the full mobile stack — from API contract design through App Store submission and post-launch monitoring.",
+  { programming: ["Swift", "Objective-C", "Python", "Kotlin"], frameworks: ["SwiftUI", "UIKit", "Combine", "CoreML", "AVFoundation"], databases: ["Core Data", "Firebase", "Realm"], cloud: ["AWS Amplify", "Firebase"], devops: ["Fastlane", "Bitrise", "TestFlight", "Xcode Cloud"], tools: ["Xcode", "Instruments", "Charles Proxy", "Figma"], softSkills: [], languages: [] },
+  twoJobs("Senior iOS Developer", "Spotify", "iOS Developer", "Hinge"),
+  oneEdu("B.S. Computer Science", "UCLA", "Los Angeles, CA", "3.7"),
+  oneProject("SwiftChart", "Swift, SwiftUI, Charts, WidgetKit"),
+);
+
+// 15. executive-luxe — VP of Engineering
+const executiveLuxeProfile = make(
+  "Michael Donovan", "VP of Engineering", "m.donovan@email.com", "+1 617 555 0158", "Boston, MA",
+  "Engineering executive with 12+ years scaling high-performing teams and mission-critical platforms. Grew engineering org from 15 to 120 engineers across 4 offices. Deep background in distributed systems, platform engineering, and cloud-native architecture. Track record of cutting time-to-market by 50%+ through investment in developer tooling and process.",
+  { programming: ["Java", "Go", "Python", "TypeScript"], frameworks: ["Spring Boot", "gRPC", "Micronaut"], databases: ["PostgreSQL", "Kafka", "Redis", "Cassandra"], cloud: ["AWS", "GCP"], devops: ["Kubernetes", "Terraform", "Helm", "ArgoCD"], tools: ["Datadog", "PagerDuty", "Jira", "Confluence"], softSkills: ["Engineering Leadership", "Org Scaling", "Hiring & Retention", "Executive Communication"], languages: [] },
+  twoJobs("VP of Engineering", "Toast", "Director of Engineering", "Wayfair"),
+  oneEdu("M.S. Software Engineering", "Boston University", "Boston, MA", "3.9"),
+  oneProject("PlatformCore", "Java, Kafka, Kubernetes, Terraform"),
+);
+
+// 16. creative-portfolio — Creative Director
+const creativePortfolioProfile = make(
+  "Lauren Mitchell", "Creative Director", "lauren.mitchell@email.com", "+1 212 555 0347", "New York, NY",
+  "Creative director with 10+ years leading award-winning integrated campaigns for global brands including Nike, Apple, and LVMH. Deep expertise in brand strategy, motion design, content production, and building world-class in-house creative teams. Won 6 Cannes Lions and 3 Clio Awards. Driven by the intersection of culture, technology, and storytelling.",
+  { programming: [], frameworks: [], databases: [], cloud: [], devops: [], tools: ["Figma", "After Effects", "Cinema 4D", "Premiere Pro", "Photoshop", "DaVinci Resolve", "Notion"], softSkills: ["Creative Direction", "Brand Strategy", "Team Leadership", "Pitching & Presentations", "Cross-functional Collaboration"], languages: ["English", "French"] },
+  twoJobs("Creative Director", "Huge Inc.", "Art Director", "Wieden+Kennedy"),
+  oneEdu("B.F.A. Advertising Design", "School of Visual Arts", "New York, NY"),
+  oneProject("MotionLib", "After Effects, Cinema 4D, React, GSAP"),
+);
+
+// 17. developer-dark — Security Engineer
+const developerDarkProfile = make(
+  "Jason Mercer", "Senior Security Engineer", "jason.mercer@email.com", "+1 703 555 0213", "Arlington, VA",
+  "Senior security engineer with 6+ years specializing in application security, red team operations, and zero-trust architecture. Cleared TS/SCI. Built internal security automation tooling now used across 8 federal agencies. Discovered and responsibly disclosed 14 CVEs. Committed to making security a developer-friendly practice rather than a gate.",
+  { programming: ["Python", "Go", "Bash", "Rust", "C"], frameworks: ["OWASP ASVS", "NIST"], databases: ["PostgreSQL", "Elasticsearch"], cloud: ["AWS GovCloud", "Azure Government"], devops: ["Docker", "Kubernetes", "Terraform"], tools: ["Burp Suite Pro", "Metasploit", "Nmap", "Wireshark", "Semgrep", "Snyk"], softSkills: ["Threat Modeling", "Security Advocacy", "Technical Documentation"], languages: [] },
+  twoJobs("Senior Security Engineer", "Booz Allen Hamilton", "Security Engineer", "MITRE"),
+  oneEdu("B.S. Cybersecurity", "George Mason University", "Fairfax, VA", "3.8"),
+  oneProject("ThreatScan", "Python, Go, Docker, Elasticsearch"),
+);
+
+// 18. fresher-edge — Recent Graduate
+const fresherEdgeProfile = make(
+  "Ethan Caldwell", "Software Engineer", "ethan.caldwell@email.com", "+1 919 555 0167", "Raleigh, NC",
+  "Computer Science graduate with a strong foundation in full-stack development, algorithms, and software design patterns. Completed 2 software engineering internships at Red Hat and IBM. Built and shipped 5 personal projects with real users. Quick learner who thrives in collaborative, fast-paced environments. Actively seeking a full-time SWE role.",
+  { programming: ["JavaScript", "TypeScript", "Python", "Java"], frameworks: ["React", "Next.js", "Spring Boot", "Express"], databases: ["PostgreSQL", "MongoDB"], cloud: ["AWS", "Vercel"], devops: ["Docker", "GitHub Actions"], tools: ["VS Code", "Postman", "Figma"], softSkills: ["Problem Solving", "Team Collaboration"], languages: [] },
+  [
+    {
+      id: "1", company: "Red Hat", role: "Software Engineer Intern", companyWebsite: "", location: "Raleigh, NC",
+      employmentType: "internship", workMode: "hybrid", startDate: "2023-05", endDate: "2023-08",
+      currentlyWorking: false,
+      description: `<ul><li>Built a React dashboard used by 200+ internal engineers to visualize CI/CD pipeline performance and identify build bottlenecks in real time</li><li>Reduced build failure diagnosis time by 30% by surfacing actionable metrics from Jenkins and GitHub Actions APIs</li><li>Collaborated with senior engineers on code reviews and architecture discussions; received return offer</li></ul>`,
+      achievements: "Received full-time return offer. Recognized in team standup for delivering ahead of schedule.",
+      technologies: ["React", "Python", "PostgreSQL", "Jenkins"], teamSize: "6", projectName: "DevMetrics Dashboard", client: "", industry: "Open Source",
+    },
+    {
+      id: "2", company: "IBM", role: "Software Engineer Intern", companyWebsite: "", location: "Research Triangle Park, NC",
+      employmentType: "internship", workMode: "onsite", startDate: "2022-06", endDate: "2022-08",
+      currentlyWorking: false,
+      description: `<ul><li>Contributed to an internal REST API used by 5 product teams, adding 3 new endpoints and improving test coverage from 60% to 88%</li><li>Participated in Agile sprints, daily standups, and sprint retrospectives across a team of 12 engineers</li></ul>`,
+      achievements: "Delivered assigned sprint tasks with zero critical bugs in production.",
+      technologies: ["Java", "Spring Boot", "MySQL"], teamSize: "12", projectName: "", client: "", industry: "Enterprise Software",
+    },
+  ],
+  oneEdu("B.S. Computer Science", "NC State University", "Raleigh, NC", "3.7"),
+  oneProject("StudyBuddy", "React, Node.js, MongoDB, Socket.io"),
+);
+
+// 19. consultant-pro — Management Consultant
+const consultantProProfile = make(
+  "Stephanie Hughes", "Senior Consultant", "s.hughes@email.com", "+1 617 555 0254", "Boston, MA",
+  "Senior management consultant with 7+ years delivering high-impact digital transformation and operational efficiency programs at Deloitte and PwC. Six Sigma Black Belt. Led engagements ranging from $5M to $45M across healthcare, logistics, and financial services. Known for translating complex operational data into clear executive strategies and actionable roadmaps.",
+  { programming: ["SQL", "Python", "R", "VBA"], frameworks: [], databases: ["SQL Server", "Snowflake"], cloud: [], devops: [], tools: ["PowerPoint", "Excel", "Tableau", "Power BI", "Miro", "ServiceNow", "Salesforce"], softSkills: ["Stakeholder Management", "Executive Communication", "Workshop Facilitation", "Change Management", "Data Analysis"], languages: ["English", "Mandarin"] },
+  twoJobs("Senior Consultant", "Deloitte", "Consultant", "PwC"),
+  oneEdu("M.B.A.", "MIT Sloan School of Management", "Cambridge, MA", "3.85"),
+  oneProject("OpsOptimizer", "Python, Tableau, SQL, Power BI"),
+);
+
+// 20. founder-resume — Startup Founder
+const founderResumeProfile = make(
+  "Christopher Lane", "Founder & CEO", "chris.lane@email.com", "+1 415 555 0399", "San Francisco, CA",
+  "Serial entrepreneur with 2 successful exits totaling $85M. Most recently built BuildFast (YC S19) to $12M ARR with a 22-person team before acquisition by Atlassian in 2023. Deep technical background in developer infrastructure. Passionate about finding 10× problems in tooling, shipping fast, and building high-trust teams. Angel investor in 8 early-stage startups.",
+  { programming: ["TypeScript", "Go", "Python", "SQL"], frameworks: ["Next.js", "FastAPI", "gRPC"], databases: ["PostgreSQL", "Redis", "ClickHouse"], cloud: ["AWS", "Vercel", "Fly.io"], devops: ["Kubernetes", "Terraform", "GitHub Actions"], tools: ["Linear", "Notion", "Stripe", "PostHog", "Intercom"], softSkills: ["Fundraising", "Recruiting", "Board Communication", "Technical Vision", "Go-to-Market"], languages: [] },
+  twoJobs("Founder & CEO", "BuildFast (YC S19, Acq. Atlassian)", "Co-founder & CTO", "DevPipe"),
+  oneEdu("B.S. Computer Science", "Stanford University", "Stanford, CA", "3.6"),
+  oneProject("OpenDeploy", "Go, Kubernetes, TypeScript, Terraform"),
+);
+
+// ─── Default export ───────────────────────────────────────────────────────────
+
+/** Used as fallback in places that reference SAMPLE_RESUME directly */
+export const SAMPLE_RESUME: ResumeBuilderData = modernProfile;
+
+/** Per-template profiles for the gallery */
 export const SAMPLE_PROFILES: Record<string, ResumeBuilderData> = {
-  modern: {
-    basics: {
-      fullName: "Ethan Walker",
-      jobTitle: "Product Designer",
-      email: "ethan.walker@email.com",
-      phone: "+1 555 0198",
-      location: "Austin, TX",
-      summary:
-        "Creative product designer with 5+ years crafting intuitive user experiences. Specialized in design systems, user research, and bridging the gap between design and engineering.",
-    },
-    skills: "Figma, UI/UX Design, Design Systems, Prototyping, User Research, HTML/CSS, React",
-    experience: [
-      {
-        id: "1",
-        company: "TechFlow Inc",
-        role: "Senior Product Designer",
-        startDate: "2021-01",
-        endDate: "Present",
-        description:
-          "<ul><li>Redesigned core product interface, increasing user engagement by 45%</li><li>Built comprehensive design system adopted across 8 product teams</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Digital Studios",
-        role: "UX Designer",
-        startDate: "2019-03",
-        endDate: "2020-12",
-        description:
-          "<ul><li>Conducted user research with 200+ participants to inform product decisions</li><li>Designed mobile-first experiences for 3 major client projects</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Rhode Island School of Design",
-        degree: "B.F.A. Graphic Design",
-        startDate: "2015-09",
-        endDate: "2019-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "DesignKit",
-        description: "Open-source component library with 5k+ weekly downloads",
-        url: "https://designkit.io",
-        stack: "React, Storybook, TypeScript",
-      },
-    ],
-  },
-
-  classic: {
-    basics: {
-      fullName: "Olivia Carter",
-      jobTitle: "Marketing Manager",
-      email: "olivia.carter@email.com",
-      phone: "+1 555 0234",
-      location: "Boston, MA",
-      summary:
-        "Results-driven marketing professional with 7+ years developing data-driven campaigns. Proven track record of increasing brand awareness and driving customer acquisition across B2B and B2C markets.",
-    },
-    skills: "Digital Marketing, SEO/SEM, Content Strategy, Analytics, Campaign Management, Social Media, Email Marketing",
-    experience: [
-      {
-        id: "1",
-        company: "GlobalTech Solutions",
-        role: "Marketing Manager",
-        startDate: "2020-06",
-        endDate: "Present",
-        description:
-          "<ul><li>Increased qualified leads by 85% through targeted content marketing strategy</li><li>Managed $500K annual marketing budget across multiple channels</li></ul>",
-      },
-      {
-        id: "2",
-        company: "BrightWave Media",
-        role: "Digital Marketing Specialist",
-        startDate: "2017-08",
-        endDate: "2020-05",
-        description:
-          "<ul><li>Grew organic traffic by 120% through SEO optimization and content creation</li><li>Launched successful email campaigns with 28% average open rate</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Boston University",
-        degree: "B.A. Marketing",
-        startDate: "2013-09",
-        endDate: "2017-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Brand Refresh Campaign",
-        description: "Led complete rebrand resulting in 40% increase in brand recognition",
-        url: "",
-        stack: "Strategy, Creative Direction, Analytics",
-      },
-    ],
-  },
-
-  executive: {
-    basics: {
-      fullName: "Daniel Brooks",
-      jobTitle: "Chief Technology Officer",
-      email: "daniel.brooks@email.com",
-      phone: "+1 555 0345",
-      location: "New York, NY",
-      summary:
-        "Strategic technology executive with 15+ years leading engineering organizations. Expertise in scaling teams, driving digital transformation, and aligning technology strategy with business objectives.",
-    },
-    skills: "Strategic Planning, Team Leadership, Cloud Architecture, Digital Transformation, Agile, Budget Management, Vendor Relations",
-    experience: [
-      {
-        id: "1",
-        company: "Enterprise Solutions Corp",
-        role: "Chief Technology Officer",
-        startDate: "2019-01",
-        endDate: "Present",
-        description:
-          "<ul><li>Lead 120+ person engineering organization across 6 global offices</li><li>Drove cloud migration saving $2M annually while improving system reliability</li></ul>",
-      },
-      {
-        id: "2",
-        company: "InnovateTech",
-        role: "VP of Engineering",
-        startDate: "2014-03",
-        endDate: "2018-12",
-        description:
-          "<ul><li>Scaled engineering team from 15 to 80 while maintaining high performance culture</li><li>Implemented DevOps practices reducing deployment time from weeks to hours</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "MIT",
-        degree: "M.S. Computer Science",
-        startDate: "2006-09",
-        endDate: "2008-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Digital Transformation Initiative",
-        description: "Led company-wide modernization of legacy systems and processes",
-        url: "",
-        stack: "Cloud Migration, Microservices, DevOps",
-      },
-    ],
-  },
-
-  innovator: {
-    basics: {
-      fullName: "Emma Collins",
-      jobTitle: "Product Manager",
-      email: "emma.collins@email.com",
-      phone: "+1 555 0456",
-      location: "Seattle, WA",
-      summary:
-        "Customer-focused product manager with 6+ years shipping innovative products. Skilled at translating user needs into product strategy and collaborating with cross-functional teams to deliver impact.",
-    },
-    skills: "Product Strategy, Roadmap Planning, User Stories, A/B Testing, Analytics, Stakeholder Management, Agile/Scrum",
-    experience: [
-      {
-        id: "1",
-        company: "CloudVentures",
-        role: "Senior Product Manager",
-        startDate: "2021-02",
-        endDate: "Present",
-        description:
-          "<ul><li>Launched 3 major features driving 30% increase in user retention</li><li>Led cross-functional team of 12 through complete product redesign</li></ul>",
-      },
-      {
-        id: "2",
-        company: "StartupHub",
-        role: "Product Manager",
-        startDate: "2018-07",
-        endDate: "2021-01",
-        description:
-          "<ul><li>Defined product vision and roadmap for B2B SaaS platform</li><li>Increased customer satisfaction score from 7.2 to 8.9 through user-centric improvements</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "University of Washington",
-        degree: "B.S. Business Administration",
-        startDate: "2014-09",
-        endDate: "2018-06",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Mobile App Launch",
-        description: "Led 0-to-1 mobile product achieving 50k downloads in first month",
-        url: "",
-        stack: "Product Strategy, User Research, Go-to-Market",
-      },
-    ],
-  },
-
-  minimalist: {
-    basics: {
-      fullName: "Nathan Reed",
-      jobTitle: "Data Scientist",
-      email: "nathan.reed@email.com",
-      phone: "+1 555 0567",
-      location: "Chicago, IL",
-      summary:
-        "Analytical data scientist with 5+ years extracting insights from complex datasets. Expertise in machine learning, statistical modeling, and translating data into actionable business recommendations.",
-    },
-    skills: "Python, R, SQL, Machine Learning, Statistical Analysis, Data Visualization, TensorFlow, Tableau",
-    experience: [
-      {
-        id: "1",
-        company: "DataCorp Analytics",
-        role: "Senior Data Scientist",
-        startDate: "2021-04",
-        endDate: "Present",
-        description:
-          "<ul><li>Built predictive models improving customer churn prediction accuracy by 35%</li><li>Developed automated reporting system saving 20 hours per week</li></ul>",
-      },
-      {
-        id: "2",
-        company: "FinTech Solutions",
-        role: "Data Analyst",
-        startDate: "2019-01",
-        endDate: "2021-03",
-        description:
-          "<ul><li>Analyzed user behavior data to identify $1.5M revenue opportunity</li><li>Created interactive dashboards used by executive team for strategic decisions</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Northwestern University",
-        degree: "M.S. Data Science",
-        startDate: "2017-09",
-        endDate: "2019-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Fraud Detection System",
-        description: "ML model detecting fraudulent transactions with 94% accuracy",
-        url: "",
-        stack: "Python, Scikit-learn, PostgreSQL",
-      },
-    ],
-  },
-
-  "ats-minimal": {
-    basics: {
-      fullName: "Sophia Bennett",
-      jobTitle: "Financial Analyst",
-      email: "sophia.bennett@email.com",
-      phone: "+1 555 0678",
-      location: "Charlotte, NC",
-      summary:
-        "Detail-oriented financial analyst with 4+ years providing data-driven insights for strategic decision-making. Strong background in financial modeling, forecasting, and variance analysis.",
-    },
-    skills: "Financial Modeling, Excel, SQL, Forecasting, Budgeting, Variance Analysis, PowerPoint, SAP",
-    experience: [
-      {
-        id: "1",
-        company: "Capital Finance Group",
-        role: "Financial Analyst",
-        startDate: "2020-08",
-        endDate: "Present",
-        description:
-          "<ul><li>Prepare monthly financial reports and variance analysis for executive leadership</li><li>Developed forecasting models improving budget accuracy by 25%</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Regional Bank Corp",
-        role: "Junior Financial Analyst",
-        startDate: "2019-06",
-        endDate: "2020-07",
-        description:
-          "<ul><li>Supported annual budgeting process for $50M operating budget</li><li>Automated reporting workflows reducing manual work by 15 hours monthly</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "University of North Carolina",
-        degree: "B.S. Finance",
-        startDate: "2015-09",
-        endDate: "2019-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Budget Optimization Model",
-        description: "Created Excel-based tool for department budget planning",
-        url: "",
-        stack: "Excel, VBA, Financial Modeling",
-      },
-    ],
-  },
-
-  "ats-compact": {
-    basics: {
-      fullName: "Ryan Mitchell",
-      jobTitle: "Operations Manager",
-      email: "ryan.mitchell@email.com",
-      phone: "+1 555 0789",
-      location: "Denver, CO",
-      summary:
-        "Process-driven operations manager with 6+ years optimizing workflows and leading teams. Proven ability to improve efficiency, reduce costs, and implement scalable operational systems.",
-    },
-    skills: "Operations Management, Process Improvement, Team Leadership, Logistics, Inventory Management, Lean Six Sigma, Project Management",
-    experience: [
-      {
-        id: "1",
-        company: "LogisticsPro",
-        role: "Operations Manager",
-        startDate: "2020-03",
-        endDate: "Present",
-        description:
-          "<ul><li>Manage daily operations for 50-person warehouse and distribution center</li><li>Reduced operational costs by 22% through process optimization initiatives</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Supply Chain Solutions",
-        role: "Operations Coordinator",
-        startDate: "2018-01",
-        endDate: "2020-02",
-        description:
-          "<ul><li>Coordinated logistics for 500+ daily shipments across 3 facilities</li><li>Implemented inventory tracking system reducing errors by 40%</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Colorado State University",
-        degree: "B.S. Business Management",
-        startDate: "2014-09",
-        endDate: "2018-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Warehouse Automation",
-        description: "Led implementation of automated picking system",
-        url: "",
-        stack: "Process Design, Vendor Management, Training",
-      },
-    ],
-  },
-
-  "startup-bold": {
-    basics: {
-      fullName: "Grace Turner",
-      jobTitle: "Growth Marketing Lead",
-      email: "grace.turner@email.com",
-      phone: "+1 555 0890",
-      location: "Los Angeles, CA",
-      summary:
-        "Growth-focused marketer with 5+ years driving user acquisition and retention for startups. Expert in growth hacking, viral loops, and building scalable marketing engines from scratch.",
-    },
-    skills: "Growth Marketing, A/B Testing, Viral Marketing, Analytics, SEO, Paid Acquisition, Conversion Optimization, SQL",
-    experience: [
-      {
-        id: "1",
-        company: "RocketShip Labs",
-        role: "Growth Marketing Lead",
-        startDate: "2021-05",
-        endDate: "Present",
-        description:
-          "<ul><li>Grew user base from 10k to 200k through viral referral program</li><li>Achieved 3.2 CAC payback period through optimized acquisition channels</li></ul>",
-      },
-      {
-        id: "2",
-        company: "StartupBoost",
-        role: "Growth Marketer",
-        startDate: "2019-02",
-        endDate: "2021-04",
-        description:
-          "<ul><li>Launched growth experiments resulting in 150% increase in signups</li><li>Built automated email sequences with 35% conversion rate</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "UCLA",
-        degree: "B.A. Communications",
-        startDate: "2015-09",
-        endDate: "2019-06",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Viral Referral System",
-        description: "Designed referral program generating 40% of new signups",
-        url: "",
-        stack: "Growth Strategy, Analytics, A/B Testing",
-      },
-    ],
-  },
-
-  "tech-focused": {
-    basics: {
-      fullName: "Liam Foster",
-      jobTitle: "DevOps Engineer",
-      email: "liam.foster@email.com",
-      phone: "+1 555 0901",
-      location: "Portland, OR",
-      summary:
-        "Infrastructure-focused DevOps engineer with 6+ years building reliable, scalable systems. Passionate about automation, observability, and empowering development teams with excellent tooling.",
-    },
-    skills: "Kubernetes, Docker, AWS, Terraform, CI/CD, Python, Monitoring, Linux, GitOps, Prometheus",
-    experience: [
-      {
-        id: "1",
-        company: "CloudScale Systems",
-        role: "Senior DevOps Engineer",
-        startDate: "2021-01",
-        endDate: "Present",
-        description:
-          "<ul><li>Architected Kubernetes infrastructure serving 10M+ daily requests</li><li>Reduced deployment time from 2 hours to 10 minutes through CI/CD automation</li></ul>",
-      },
-      {
-        id: "2",
-        company: "TechStack Inc",
-        role: "DevOps Engineer",
-        startDate: "2018-06",
-        endDate: "2020-12",
-        description:
-          "<ul><li>Implemented infrastructure-as-code reducing provisioning time by 80%</li><li>Built comprehensive monitoring system improving incident response time</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Oregon State University",
-        degree: "B.S. Computer Science",
-        startDate: "2014-09",
-        endDate: "2018-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "K8s Deployment Tool",
-        description: "Open-source CLI tool for simplified Kubernetes deployments",
-        url: "https://github.com",
-        stack: "Go, Kubernetes, Docker",
-      },
-    ],
-  },
-
-  "creative-sidebar": {
-    basics: {
-      fullName: "Hannah Cooper",
-      jobTitle: "Brand Designer",
-      email: "hannah.cooper@email.com",
-      phone: "+1 555 1012",
-      location: "Brooklyn, NY",
-      summary:
-        "Creative brand designer with 5+ years crafting memorable visual identities. Specialized in brand strategy, illustration, and creating cohesive design systems that tell compelling stories.",
-    },
-    skills: "Brand Design, Illustration, Adobe Creative Suite, Typography, Art Direction, Motion Graphics, Brand Strategy",
-    experience: [
-      {
-        id: "1",
-        company: "Studio Collective",
-        role: "Senior Brand Designer",
-        startDate: "2021-03",
-        endDate: "Present",
-        description:
-          "<ul><li>Led brand identity projects for 15+ clients across tech and lifestyle sectors</li><li>Created award-winning visual identity featured in Communication Arts</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Creative Agency NYC",
-        role: "Brand Designer",
-        startDate: "2019-01",
-        endDate: "2021-02",
-        description:
-          "<ul><li>Designed brand systems for 3 successful product launches</li><li>Collaborated with strategy team on brand positioning and messaging</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Parsons School of Design",
-        degree: "B.F.A. Communication Design",
-        startDate: "2015-09",
-        endDate: "2019-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Sustainable Brand Initiative",
-        description: "Complete rebrand for eco-friendly product line",
-        url: "",
-        stack: "Brand Strategy, Illustration, Packaging Design",
-      },
-    ],
-  },
-
-  "designer-split": {
-    basics: {
-      fullName: "Mason Parker",
-      jobTitle: "Frontend Engineer",
-      email: "mason.parker@email.com",
-      phone: "+1 555 1123",
-      location: "Miami, FL",
-      summary:
-        "Frontend engineer with 5+ years building performant, accessible web applications. Strong focus on user experience, modern JavaScript frameworks, and bridging design and development.",
-    },
-    skills: "React, TypeScript, Next.js, CSS/Tailwind, Accessibility, Performance, Testing, Git, Figma",
-    experience: [
-      {
-        id: "1",
-        company: "WebFlow Technologies",
-        role: "Senior Frontend Engineer",
-        startDate: "2021-06",
-        endDate: "Present",
-        description:
-          "<ul><li>Built component library used across 5 product teams</li><li>Improved Core Web Vitals scores by 40% through performance optimization</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Digital Products Co",
-        role: "Frontend Developer",
-        startDate: "2019-03",
-        endDate: "2021-05",
-        description:
-          "<ul><li>Developed responsive interfaces for mobile-first applications</li><li>Implemented accessibility standards achieving WCAG 2.1 AA compliance</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "University of Florida",
-        degree: "B.S. Computer Science",
-        startDate: "2015-09",
-        endDate: "2019-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "UI Component Library",
-        description: "Open-source React component library with 3k+ stars",
-        url: "https://github.com",
-        stack: "React, TypeScript, Storybook",
-      },
-    ],
-  },
-
-  "professional-clean": {
-    basics: {
-      fullName: "Chloe Adams",
-      jobTitle: "Management Consultant",
-      email: "chloe.adams@email.com",
-      phone: "+1 555 1234",
-      location: "Washington, DC",
-      summary:
-        "Strategic management consultant with 7+ years advising Fortune 500 clients on operational excellence and digital transformation. Expertise in change management, process optimization, and stakeholder engagement.",
-    },
-    skills: "Strategy Consulting, Change Management, Process Improvement, Stakeholder Management, Data Analysis, Presentation, Project Management",
-    experience: [
-      {
-        id: "1",
-        company: "Premier Consulting Group",
-        role: "Senior Consultant",
-        startDate: "2020-01",
-        endDate: "Present",
-        description:
-          "<ul><li>Lead consulting engagements for Fortune 500 clients across multiple industries</li><li>Delivered $5M in cost savings through operational efficiency initiatives</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Strategy Partners LLC",
-        role: "Consultant",
-        startDate: "2017-07",
-        endDate: "2019-12",
-        description:
-          "<ul><li>Conducted market analysis and competitive research for client strategy projects</li><li>Managed cross-functional teams of 8-12 stakeholders through change initiatives</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Georgetown University",
-        degree: "MBA",
-        startDate: "2015-09",
-        endDate: "2017-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Digital Transformation Program",
-        description: "Led enterprise-wide transformation for global manufacturing client",
-        url: "",
-        stack: "Strategy, Change Management, Process Design",
-      },
-    ],
-  },
-
-  "ats-elegant": {
-    basics: {
-      fullName: "Isabella Martinez",
-      jobTitle: "HR Business Partner",
-      email: "isabella.martinez@email.com",
-      phone: "+1 555 2345",
-      location: "Atlanta, GA",
-      summary:
-        "Strategic HR professional with 6+ years partnering with business leaders to drive organizational effectiveness. Expertise in talent acquisition, employee relations, and performance management.",
-    },
-    skills: "HR Strategy, Talent Acquisition, Employee Relations, Performance Management, HRIS, Compensation, Training & Development",
-    experience: [
-      {
-        id: "1",
-        company: "TechCorp Global",
-        role: "Senior HR Business Partner",
-        startDate: "2021-03",
-        endDate: "Present",
-        description:
-          "<ul><li>Partner with C-suite on workforce planning and organizational design</li><li>Reduced time-to-hire by 35% through process optimization</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Growth Industries",
-        role: "HR Generalist",
-        startDate: "2018-06",
-        endDate: "2021-02",
-        description:
-          "<ul><li>Managed full-cycle recruitment for 100+ positions annually</li><li>Implemented employee engagement program increasing retention by 20%</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Emory University",
-        degree: "B.A. Human Resources Management",
-        startDate: "2014-09",
-        endDate: "2018-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Diversity & Inclusion Initiative",
-        description: "Led company-wide D&I program impacting 500+ employees",
-        url: "",
-        stack: "Program Management, Training, Analytics",
-      },
-    ],
-  },
-
-  "gradient-pro": {
-    basics: {
-      fullName: "Marcus Johnson",
-      jobTitle: "Creative Director",
-      email: "marcus.johnson@email.com",
-      phone: "+1 555 3456",
-      location: "San Diego, CA",
-      summary:
-        "Award-winning creative director with 8+ years leading brand campaigns and creative teams. Passionate about storytelling, visual innovation, and creating work that drives business results.",
-    },
-    skills: "Creative Direction, Brand Strategy, Team Leadership, Campaign Development, Art Direction, Copywriting, Client Relations",
-    experience: [
-      {
-        id: "1",
-        company: "Visionary Agency",
-        role: "Creative Director",
-        startDate: "2020-09",
-        endDate: "Present",
-        description:
-          "<ul><li>Lead creative team of 15 across multiple high-profile brand campaigns</li><li>Directed award-winning campaign generating 50M+ impressions</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Brand Collective",
-        role: "Senior Art Director",
-        startDate: "2016-04",
-        endDate: "2020-08",
-        description:
-          "<ul><li>Conceptualized and executed integrated campaigns for Fortune 500 clients</li><li>Mentored junior designers and established creative standards</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Art Center College of Design",
-        degree: "B.F.A. Advertising",
-        startDate: "2012-09",
-        endDate: "2016-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Rebrand Campaign 2023",
-        description: "Complete brand refresh for national retail chain",
-        url: "",
-        stack: "Brand Strategy, Creative Direction, Campaign",
-      },
-    ],
-  },
-
-  "executive-luxe": {
-    basics: {
-      fullName: "Victoria Chen",
-      jobTitle: "Chief Operating Officer",
-      email: "victoria.chen@email.com",
-      phone: "+1 555 4567",
-      location: "San Francisco, CA",
-      summary:
-        "Results-driven executive with 18+ years optimizing operations and scaling organizations. Proven track record of driving operational excellence, building high-performing teams, and delivering sustainable growth.",
-    },
-    skills: "Operations Strategy, P&L Management, Process Optimization, Team Building, Strategic Planning, Supply Chain, Risk Management",
-    experience: [
-      {
-        id: "1",
-        company: "ScaleUp Technologies",
-        role: "Chief Operating Officer",
-        startDate: "2018-06",
-        endDate: "Present",
-        description:
-          "<ul><li>Oversee operations for $200M revenue SaaS company with 300+ employees</li><li>Improved operational efficiency by 40% while scaling team 3x</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Enterprise Solutions Inc",
-        role: "VP of Operations",
-        startDate: "2012-03",
-        endDate: "2018-05",
-        description:
-          "<ul><li>Led operational transformation reducing costs by $8M annually</li><li>Built and managed operations team across 4 global offices</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Stanford GSB",
-        degree: "MBA",
-        startDate: "2010-09",
-        endDate: "2012-06",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Global Expansion Initiative",
-        description: "Led international expansion into 5 new markets",
-        url: "",
-        stack: "Strategy, Operations, Market Entry",
-      },
-    ],
-  },
-
-  "creative-portfolio": {
-    basics: {
-      fullName: "Jasper Williams",
-      jobTitle: "Motion Designer",
-      email: "jasper.williams@email.com",
-      phone: "+1 555 5678",
-      location: "Nashville, TN",
-      summary:
-        "Creative motion designer with 5+ years crafting engaging animations and visual experiences. Specialized in brand motion, explainer videos, and bringing stories to life through movement.",
-    },
-    skills: "After Effects, Cinema 4D, Premiere Pro, Illustration, Animation, Storyboarding, Sound Design",
-    experience: [
-      {
-        id: "1",
-        company: "Motion Studios",
-        role: "Senior Motion Designer",
-        startDate: "2021-07",
-        endDate: "Present",
-        description:
-          "<ul><li>Create motion graphics for major brand campaigns and product launches</li><li>Directed animated explainer series with 2M+ views</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Creative House",
-        role: "Motion Designer",
-        startDate: "2019-02",
-        endDate: "2021-06",
-        description:
-          "<ul><li>Produced motion content for social media and digital advertising</li><li>Collaborated with creative team on integrated campaigns</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Savannah College of Art and Design",
-        degree: "B.F.A. Motion Media Design",
-        startDate: "2015-09",
-        endDate: "2019-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Brand Motion System",
-        description: "Developed comprehensive motion language for tech startup",
-        url: "",
-        stack: "After Effects, Cinema 4D, Brand Design",
-      },
-    ],
-  },
-
-  "developer-dark": {
-    basics: {
-      fullName: "Alex Nakamura",
-      jobTitle: "Backend Engineer",
-      email: "alex.nakamura@email.com",
-      phone: "+1 555 6789",
-      location: "Seattle, WA",
-      summary:
-        "Backend engineer with 6+ years building scalable distributed systems. Passionate about clean architecture, performance optimization, and solving complex technical challenges.",
-    },
-    skills: "Go, Python, PostgreSQL, Redis, Kubernetes, gRPC, Microservices, System Design, AWS",
-    experience: [
-      {
-        id: "1",
-        company: "CloudScale",
-        role: "Senior Backend Engineer",
-        startDate: "2021-04",
-        endDate: "Present",
-        description:
-          "<ul><li>Architect and build microservices handling 100M+ requests daily</li><li>Reduced API latency by 60% through caching and optimization</li></ul>",
-      },
-      {
-        id: "2",
-        company: "DataFlow Systems",
-        role: "Backend Engineer",
-        startDate: "2018-07",
-        endDate: "2021-03",
-        description:
-          "<ul><li>Built real-time data processing pipeline handling 1TB+ daily</li><li>Implemented monitoring system reducing incident response time by 70%</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "University of Washington",
-        degree: "B.S. Computer Science",
-        startDate: "2014-09",
-        endDate: "2018-06",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "DistributedCache",
-        description: "Open-source distributed caching library with 4k+ stars",
-        url: "https://github.com",
-        stack: "Go, Redis, Docker",
-      },
-    ],
-  },
-
-  "fresher-edge": {
-    basics: {
-      fullName: "Aisha Patel",
-      jobTitle: "Computer Science Graduate",
-      email: "aisha.patel@email.com",
-      phone: "+1 555 7890",
-      location: "Austin, TX",
-      summary:
-        "Recent computer science graduate with strong foundation in software development and passion for building user-centric applications. Eager to contribute technical skills and fresh perspective to innovative team.",
-    },
-    skills: "Java, Python, JavaScript, React, SQL, Git, Agile, Problem Solving",
-    experience: [
-      {
-        id: "1",
-        company: "Tech Startup Inc",
-        role: "Software Engineering Intern",
-        startDate: "2023-06",
-        endDate: "2023-08",
-        description:
-          "<ul><li>Developed features for web application used by 10k+ users</li><li>Collaborated with team using Agile methodology and Git workflow</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "University of Texas at Austin",
-        degree: "B.S. Computer Science",
-        startDate: "2020-09",
-        endDate: "2024-05",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Campus Event Platform",
-        description: "Full-stack web app for university event management",
-        url: "",
-        stack: "React, Node.js, MongoDB",
-      },
-      {
-        id: "2",
-        name: "AI Study Assistant",
-        description: "Machine learning project for personalized study recommendations",
-        url: "",
-        stack: "Python, TensorFlow, Flask",
-      },
-    ],
-  },
-
-  "consultant-pro": {
-    basics: {
-      fullName: "Benjamin Foster",
-      jobTitle: "Strategy Consultant",
-      email: "benjamin.foster@email.com",
-      phone: "+1 555 8901",
-      location: "Chicago, IL",
-      summary:
-        "Strategy consultant with 6+ years advising C-suite executives on growth strategy and market entry. Track record of delivering actionable insights that drive measurable business impact.",
-    },
-    skills: "Strategic Planning, Market Analysis, Financial Modeling, Stakeholder Management, Due Diligence, Presentation, Excel",
-    experience: [
-      {
-        id: "1",
-        company: "McKinley Consulting",
-        role: "Senior Consultant",
-        startDate: "2021-01",
-        endDate: "Present",
-        description:
-          "<ul><li>Lead strategy engagements for Fortune 500 clients across industries</li><li>Developed market entry strategy resulting in $50M revenue opportunity</li></ul>",
-      },
-      {
-        id: "2",
-        company: "Apex Advisory",
-        role: "Consultant",
-        startDate: "2018-08",
-        endDate: "2020-12",
-        description:
-          "<ul><li>Conducted competitive analysis and market research for growth initiatives</li><li>Supported M&A due diligence for $200M+ transactions</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "University of Chicago Booth",
-        degree: "MBA",
-        startDate: "2016-09",
-        endDate: "2018-06",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "Market Expansion Study",
-        description: "Led analysis for client's entry into emerging markets",
-        url: "",
-        stack: "Strategy, Market Research, Financial Analysis",
-      },
-    ],
-  },
-
-  "founder-resume": {
-    basics: {
-      fullName: "Jordan Blake",
-      jobTitle: "Founder & CEO",
-      email: "jordan.blake@email.com",
-      phone: "+1 555 9012",
-      location: "San Francisco, CA",
-      summary:
-        "Serial entrepreneur with 8+ years building and scaling technology companies. Passionate about solving real problems, building exceptional teams, and creating products people love.",
-    },
-    skills: "Product Strategy, Fundraising, Team Building, Go-to-Market, Growth, Leadership, Vision",
-    experience: [
-      {
-        id: "1",
-        company: "BuildFast AI",
-        role: "Founder & CEO",
-        startDate: "2021-03",
-        endDate: "Present",
-        description:
-          "<ul><li>Founded AI-powered productivity platform, grew to 50k+ users</li><li>Raised $3M seed round from top-tier VCs</li><li>Built team of 15 across product, engineering, and growth</li></ul>",
-      },
-      {
-        id: "2",
-        company: "DataFlow (Acquired)",
-        role: "Co-Founder & CTO",
-        startDate: "2017-06",
-        endDate: "2021-02",
-        description:
-          "<ul><li>Co-founded analytics startup, scaled to $2M ARR</li><li>Successfully acquired by enterprise software company</li></ul>",
-      },
-    ],
-    education: [
-      {
-        id: "1",
-        institution: "Stanford University",
-        degree: "B.S. Computer Science",
-        startDate: "2013-09",
-        endDate: "2017-06",
-      },
-    ],
-    projects: [
-      {
-        id: "1",
-        name: "BuildFast AI",
-        description: "AI productivity platform with 50k+ users and $3M funding",
-        url: "https://buildfast.ai",
-        stack: "Product, AI/ML, SaaS",
-      },
-      {
-        id: "2",
-        name: "DataFlow Analytics",
-        description: "Analytics platform acquired after reaching $2M ARR",
-        url: "",
-        stack: "Analytics, B2B SaaS, Growth",
-      },
-    ],
-  },
+  modern:              modernProfile,
+  classic:             classicProfile,
+  executive:           executiveProfile,
+  innovator:           innovatorProfile,
+  minimalist:          minimalistProfile,
+  "ats-minimal":       atsMinimalProfile,
+  "ats-compact":       atsCompactProfile,
+  "startup-bold":      startupBoldProfile,
+  "creative-sidebar":  creativeSidebarProfile,
+  "professional-clean": professionalCleanProfile,
+  "tech-focused":      techFocusedProfile,
+  "designer-split":    designerSplitProfile,
+  "ats-elegant":       atsElegantProfile,
+  "gradient-pro":      gradientProProfile,
+  "executive-luxe":    executiveLuxeProfile,
+  "creative-portfolio": creativePortfolioProfile,
+  "developer-dark":    developerDarkProfile,
+  "fresher-edge":      fresherEdgeProfile,
+  "consultant-pro":    consultantProProfile,
+  "founder-resume":    founderResumeProfile,
 };
-
