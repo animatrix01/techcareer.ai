@@ -1,0 +1,10 @@
+export { Nav } from './Nav';
+export { Hero } from './Hero';
+export { Trust } from './Trust';
+export { Bento } from './Bento';
+export { Workflow } from './Workflow';
+export { Templates } from './Templates';
+export { Showcase } from './Showcase';
+export { Stories } from './Stories';
+export { CTA } from './CTA';
+export { Footer } from './Footer';

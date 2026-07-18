@@ -1,0 +1,58 @@
+/* Premium Text Animation Styles */
+
+/* Enable hardware acceleration for smooth 60fps animations */
+.text-rotator {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optimize for different screen densities */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  .text-rotator {
+    transform: translateZ(0);
+  }
+}
+
+/* Ensure smooth animations across browsers */
+.text-rotator * {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce) {
+  .text-rotator {
+    transform-style: initial;
+    perspective: initial;
+  }
+  
+  .text-rotator * {
+    transform: none !important;
+    transition: opacity 0.3s ease-in-out !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .text-rotator {
+    filter: none !important;
+  }
+}
+
+/* Print styles - disable animations */
+@media print {
+  .text-rotator {
+    transform: none !important;
+    transition: none !important;
+  }
+  
+  .text-rotator * {
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+  }
+}

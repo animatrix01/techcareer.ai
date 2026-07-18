@@ -8,8 +8,24 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif), "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, monospace;
   --font-heading: var(--font-sans);
+  
+  /* Lovable Landing Colors */
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-cream: var(--cream);
+  --color-indigo: var(--indigo);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-mint: var(--mint);
+  --color-teal: var(--teal);
+  --color-coral: var(--coral);
+  --color-peach: var(--peach);
+  --color-lavender: var(--lavender);
+  --color-sky: var(--sky);
+  --color-cyan-soft: var(--cyan-soft);
+  
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,11 +65,31 @@
 }
 
 :root {
-  --background: oklch(0.988 0.008 285);
+  /* Lovable Landing Palette */
+  --paper: oklch(0.985 0.006 90);
+  --cream: oklch(0.965 0.018 85);
+  --ink: oklch(0.18 0.025 270);
+  --indigo: oklch(0.42 0.18 275);
+  --indigo-soft: oklch(0.7 0.13 275);
+  --mint: oklch(0.86 0.09 165);
+  --teal: oklch(0.7 0.11 195);
+  --coral: oklch(0.74 0.14 30);
+  --peach: oklch(0.88 0.08 60);
+  --lavender: oklch(0.82 0.07 300);
+  --sky: oklch(0.82 0.08 235);
+  --cyan-soft: oklch(0.88 0.06 210);
+  
+  /* Lovable Shadows */
+  --shadow-soft: 0 1px 2px oklch(0.2 0.03 270 / 0.04), 0 8px 24px -8px oklch(0.2 0.03 270 / 0.12);
+  --shadow-float: 0 20px 60px -20px oklch(0.2 0.05 275 / 0.25), 0 4px 12px -4px oklch(0.2 0.05 275 / 0.1);
+  --shadow-glow: 0 0 0 1px oklch(1 0 0 / 0.6) inset, 0 30px 80px -30px oklch(0.4 0.15 275 / 0.4);
+  
+  /* Existing TechCareer Colors */
+  --background: var(--paper);
   --foreground: oklch(0.20 0.04 270);
-  --card: oklch(1 0.004 285);
+  --card: oklch(1 0 0 / 0.72);
   --card-foreground: oklch(0.20 0.04 270);
-  --popover: oklch(1 0.004 285);
+  --popover: oklch(1 0 0 / 0.80);
   --popover-foreground: oklch(0.20 0.04 270);
   --primary: oklch(0.50 0.24 277);
   --primary-foreground: oklch(0.99 0.005 285);
@@ -124,23 +160,23 @@
   html {
     @apply font-sans;
     color-scheme: light;
-    /* Retro beige/cream background with subtle grid */
-    background-color: #EFE9E1;
-    background-image:
-      linear-gradient(#D4C5B3 1px, transparent 1px),
-      linear-gradient(90deg, #D4C5B3 1px, transparent 1px),
-      radial-gradient(ellipse at center, transparent 0%, rgba(107,89,68,0.04) 100%);
-    background-size: 48px 48px, 48px 48px, 100% 100%;
+    min-height: 100%;
+    background-color: var(--paper);
+    scroll-behavior: smooth;
   }
   body {
     @apply text-foreground antialiased;
-    /* Retro beige/cream background with subtle grid */
-    background-color: #EFE9E1;
+    min-height: 100vh;
+    /* Global soft pastel gradient — fixed so it covers the entire site on every page */
+    background-color: var(--paper);
     background-image:
-      linear-gradient(#D4C5B3 1px, transparent 1px),
-      linear-gradient(90deg, #D4C5B3 1px, transparent 1px),
-      radial-gradient(ellipse at center, transparent 0%, rgba(107,89,68,0.04) 100%);
-    background-size: 48px 48px, 48px 48px, 100% 100%;
+      radial-gradient(ellipse 80% 60% at 10% 5%,  oklch(0.86 0.09 165 / 0.65) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 55% at 90% 8%,  oklch(0.82 0.08 235 / 0.60) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 80% 90%, oklch(0.88 0.08 60  / 0.58) 0%, transparent 55%),
+      radial-gradient(ellipse 65% 55% at 5%  92%, oklch(0.82 0.07 300 / 0.58) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, oklch(0.42 0.18 275 / 0.12) 0%, transparent 60%);
+    background-size: 100% 100%;
+    background-attachment: fixed;
   }
 }
 
@@ -237,4 +273,171 @@
   .btn-shine:hover::after {
     animation: btn-shine 0.55s ease forwards;
   }
+}
+
+
+/* ============================================ */
+/* Lovable Landing Page Utilities */
+/* ============================================ */
+
+@utility font-serif { 
+  font-family: var(--font-serif); 
+  font-feature-settings: "liga"; 
+}
+
+/* Grain texture effect */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+}
+
+@utility grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Gradient mesh backgrounds */
+@utility mesh-1 {
+  background:
+    radial-gradient(60% 60% at 12% 8%, oklch(0.86 0.09 165 / 0.55), transparent 60%),
+    radial-gradient(50% 50% at 92% 18%, oklch(0.82 0.08 235 / 0.55), transparent 60%),
+    radial-gradient(45% 45% at 78% 92%, oklch(0.88 0.08 60 / 0.5), transparent 60%),
+    radial-gradient(40% 40% at 8% 96%, oklch(0.82 0.07 300 / 0.5), transparent 60%),
+    var(--paper);
+}
+
+@utility mesh-2 {
+  background:
+    radial-gradient(50% 60% at 85% 10%, oklch(0.74 0.14 30 / 0.35), transparent 60%),
+    radial-gradient(45% 55% at 10% 90%, oklch(0.7 0.11 195 / 0.35), transparent 60%),
+    var(--cream);
+}
+
+@utility mesh-3 {
+  background:
+    radial-gradient(60% 60% at 50% 0%, oklch(0.42 0.18 275 / 0.18), transparent 60%),
+    radial-gradient(40% 40% at 90% 100%, oklch(0.86 0.09 165 / 0.4), transparent 60%),
+    var(--paper);
+}
+
+@utility mesh-dark {
+  background:
+    radial-gradient(60% 70% at 20% 10%, oklch(0.32 0.13 275 / 0.7), transparent 60%),
+    radial-gradient(50% 60% at 90% 30%, oklch(0.4 0.13 220 / 0.6), transparent 60%),
+    radial-gradient(50% 60% at 60% 100%, oklch(0.5 0.12 300 / 0.5), transparent 60%),
+    oklch(0.16 0.03 270);
+}
+
+/* Custom shadows */
+@utility shadow-soft { box-shadow: var(--shadow-soft); }
+@utility shadow-float { box-shadow: var(--shadow-float); }
+@utility shadow-glow { box-shadow: var(--shadow-glow); }
+
+/* Tile component */
+@utility tile {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 1px solid oklch(0.9 0.01 270 / 0.5);
+  background: oklch(1 0 0 / 0.55);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+/* Button styles */
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, oklch(0.28 0.14 275), oklch(0.18 0.06 275));
+  color: oklch(0.985 0.006 90);
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 0 oklch(1 0 0 / 0.15) inset, 0 10px 30px -10px oklch(0.2 0.1 275 / 0.5);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 1px 0 oklch(1 0 0 / 0.2) inset, 0 16px 40px -12px oklch(0.2 0.1 275 / 0.55);
+  }
+}
+
+@utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid oklch(0.9 0.01 270 / 0.8);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.9rem;
+  backdrop-filter: blur(8px);
+  transition: background 0.2s ease;
+  &:hover {
+    background: oklch(1 0 0 / 0.95);
+  }
+}
+
+/* Safelist for dynamic color classes */
+@source inline("bg-mint bg-peach bg-sky bg-coral bg-lavender bg-teal bg-indigo bg-cyan-soft bg-mint/70 bg-muted text-indigo text-coral text-mint text-sky text-peach text-lavender text-teal bg-ink bg-paper bg-cream");
+
+/* Animations */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@utility float-slow { animation: float-y 7s ease-in-out infinite; }
+@utility float-med { animation: float-y 5s ease-in-out infinite; }
+
+@keyframes dash {
+  to { stroke-dashoffset: -200; }
+}
+
+@utility flow-dash { 
+  stroke-dasharray: 6 8; 
+  animation: dash 6s linear infinite; 
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility marquee-track { 
+  animation: marquee 40s linear infinite; 
+}
+
+/* ============================================ */
+/* Clerk Auth — remove footer divider lines     */
+/* ============================================ */
+.cl-footer,
+.cl-footerAction,
+.cl-footerPages {
+  border-top: none !important;
+  box-shadow: none !important;
+}
+.cl-footer::before,
+.cl-footer::after,
+.cl-footerAction::before,
+.cl-footerAction::after {
+  display: none !important;
+}
+/* Clerk uses box-shadow as the divider line trick */
+.cl-card > div {
+  box-shadow: none !important;
+}
+/* Nuke the two horizontal rule-like shadows in the card bottom */
+.cl-card [class*="cl-internal"] {
+  border-top: none !important;
+  box-shadow: none !important;
 }
