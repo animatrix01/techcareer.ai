@@ -167,9 +167,9 @@ export async function saveBuilderResume(input: {
   // ── Validate and sanitize all JSONB fields before touching the DB ──
   const parsed = builderResumePayloadSchema.safeParse(input);
   if (!parsed.success) {
-    const firstError = parsed.error.errors[0];
+    const firstError = parsed.error.issues[0];
     // Log full validation errors for debugging
-    console.error("[saveBuilderResume] Validation failed:", JSON.stringify(parsed.error.errors, null, 2));
+    console.error("[saveBuilderResume] Validation failed:", JSON.stringify(parsed.error.issues, null, 2));
     throw new Error(`Invalid resume data: ${firstError.path.join(".")} — ${firstError.message}`);
   }
   const safe = parsed.data;
