@@ -4,7 +4,7 @@ export function Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <Image
-        src="/next career logo only.png"
+        src="/nextcareerlogo.png"
         alt="NextCareer logo"
         width={56}
         height={56}
