@@ -1,6 +1,5 @@
 import { MapIcon } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 import { getUserResumes } from "@/actions/resume";
 import { getUserRoadmaps } from "@/actions/roadmap";
@@ -40,23 +39,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border/40 bg-paper/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-[1180px] items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/next career logo only.png"
-              alt="NextCareer logo"
-              width={28}
-              height={28}
-              className="h-7 w-7 object-contain"
-            />
-            <span className="font-semibold text-lg tracking-tight text-ink">
-              NextCareer AI
-            </span>
-          </Link>
-        </div>
-      </header>
-
       <main className="mx-auto w-full max-w-[1180px] px-6 py-16 space-y-20">
 
         {/* ── My Resumes ── */}

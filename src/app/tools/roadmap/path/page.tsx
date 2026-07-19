@@ -123,7 +123,7 @@ export default function RoadmapPathPage() {
 
   if (!isMounted || isLoading) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-violet-50 via-blue-50/30 to-slate-50" />
+      <div className="min-h-screen w-full" />
     );
   }
 
@@ -131,13 +131,13 @@ export default function RoadmapPathPage() {
 
   if (!hasRoadmap) {
     return (
-      <main className="min-h-screen w-full bg-gradient-to-br from-violet-50 via-blue-50/30 to-slate-50 text-slate-900">
+      <main className="min-h-screen w-full text-ink">
         <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center gap-6 px-6 py-20 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100">
             <Layers className="h-8 w-8 text-violet-500" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">No roadmap found</h2>
-          <p className="max-w-sm text-slate-500">
+          <h2 className="text-2xl font-bold text-ink">No roadmap found</h2>
+          <p className="max-w-sm text-muted-foreground">
             We couldn&apos;t find a roadmap to display. Head back to the planner to generate one.
           </p>
           <button
@@ -154,7 +154,7 @@ export default function RoadmapPathPage() {
   }
 
   return (
-    <main className="min-h-screen w-full bg-gradient-to-br from-violet-50/60 via-blue-50/20 to-slate-50 text-slate-900">
+    <main className="min-h-screen w-full text-ink">
       <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
 
         {/* ── Page header ─────────────────────────────────────────────────── */}
@@ -168,7 +168,7 @@ export default function RoadmapPathPage() {
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-violet-600">
               Your Career Roadmap
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
               {resolvedRole ?? "Your Roadmap"}
             </h1>
             <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -188,7 +188,7 @@ export default function RoadmapPathPage() {
           <button
             type="button"
             onClick={() => router.push("/tools/roadmap")}
-            className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:shadow"
+            className="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:bg-cream hover:shadow"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Planner
@@ -237,10 +237,10 @@ export default function RoadmapPathPage() {
                   </motion.div>
 
                   {/* Phase card */}
-                  <article className={`rounded-2xl border border-slate-100 bg-white p-6 shadow-md ring-1 ${ring} sm:p-8`}>
+                  <article className={`rounded-2xl border border-border/50 bg-paper/80 backdrop-blur-sm p-6 shadow-md ring-1 ${ring} sm:p-8`}>
                     {/* Card header */}
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                      <h2 className="text-xl font-bold text-ink sm:text-2xl">
                         {phase.title}
                       </h2>
                       <span className={`inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r ${gradient} px-3.5 py-1 text-xs font-semibold text-white shadow-sm`}>
@@ -250,14 +250,14 @@ export default function RoadmapPathPage() {
                     </div>
 
                     {/* Description */}
-                    <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-[0.95rem]">
+                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
                       {phase.description}
                     </p>
 
                     {/* Skills chips */}
                     {phase.skills.length > 0 && (
                       <div className="mt-5">
-                        <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                           Skills
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -276,17 +276,17 @@ export default function RoadmapPathPage() {
                     {/* Action items */}
                     {phase.actionItems.length > 0 && (
                       <div className="mt-5">
-                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                           Action Items
                         </p>
                         <ul className="space-y-2.5">
                           {phase.actionItems.map((item) => (
                             <li
                               key={`${phase.id}-action-${item}`}
-                              className="flex items-start gap-3 text-sm leading-relaxed text-slate-700"
+                              className="flex items-start gap-3 text-sm leading-relaxed text-ink"
                             >
-                              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-slate-200 bg-white">
-                                <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-border bg-paper/60">
+                                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
                               </span>
                               <span>{item}</span>
                             </li>
@@ -307,16 +307,16 @@ export default function RoadmapPathPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-16 overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50 via-blue-50/50 to-teal-50/30 p-8 text-center shadow-lg sm:p-12"
+          className="mt-16 overflow-hidden rounded-3xl border border-border/50 bg-paper/70 backdrop-blur-sm p-8 text-center shadow-lg sm:p-12"
         >
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg shadow-violet-200">
             <PartyPopper className="h-8 w-8 text-white" />
           </div>
 
-          <h2 className="mt-5 text-2xl font-bold text-slate-900 sm:text-3xl">
+          <h2 className="mt-5 text-2xl font-bold text-ink sm:text-3xl">
             Roadmap Complete
           </h2>
-          <p className="mt-3 text-slate-500">
+          <p className="mt-3 text-muted-foreground">
             You have a clear path ahead.
             {estimatedDuration && (
               <>
@@ -326,7 +326,7 @@ export default function RoadmapPathPage() {
             )}
           </p>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 text-teal-500" />
               {roadmapData.length} phases mapped
@@ -345,7 +345,7 @@ export default function RoadmapPathPage() {
             <button
               type="button"
               onClick={() => router.push("/tools/roadmap")}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:shadow"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-paper/80 px-5 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:bg-cream hover:shadow"
             >
               <RotateCcw className="h-4 w-4" />
               Start Over

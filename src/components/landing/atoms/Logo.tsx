@@ -4,15 +4,15 @@ export function Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <Image
-        src="/next career logo only.png"
+        src="/nextcareerlogo.png"
         alt="NextCareer logo"
-        width={56}
-        height={56}
-        className="h-14 w-14 object-contain"
+        width={44}
+        height={44}
+        className="h-11 w-11 object-contain"
         priority
       />
-      <span className="font-serif text-[1.35rem] leading-none tracking-tight text-ink">
-        NextCareer<span className="text-indigo">·</span>AI
+      <span className="font-sans font-semibold text-[1.1rem] leading-none tracking-tight text-ink">
+        NextCareer AI
       </span>
     </div>
   );

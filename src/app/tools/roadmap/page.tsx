@@ -231,7 +231,7 @@ export default function RoadmapInputPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-violet-100/60 via-blue-100/40 to-teal-100/60 rounded-3xl blur-2xl" />
               
               {/* Main container */}
-              <div className="relative w-full h-full rounded-3xl border border-white/60 bg-white/40 backdrop-blur-xl shadow-2xl overflow-hidden">
+              <div className="relative w-full h-full rounded-3xl border border-border/40 bg-paper/40 backdrop-blur-xl shadow-2xl overflow-hidden">
                 
                 {/* Floating skill bubbles */}
                 <motion.div
@@ -303,11 +303,11 @@ export default function RoadmapInputPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.2 }}
-                  className="absolute top-24 left-12 w-32 h-16 bg-white/90 border border-slate-200/60 rounded-xl shadow-lg backdrop-blur-sm p-3"
+                  className="absolute top-24 left-12 w-32 h-16 bg-paper/90 border border-border/60 rounded-xl shadow-lg backdrop-blur-sm p-3"
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-violet-400" />
-                    <div className="text-xs font-semibold text-slate-700">Foundations</div>
+                    <div className="text-xs font-semibold text-ink">Foundations</div>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">3-4 weeks</div>
                 </motion.div>
@@ -316,11 +316,11 @@ export default function RoadmapInputPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 1.6 }}
-                  className="absolute bottom-24 right-12 w-32 h-16 bg-white/90 border border-slate-200/60 rounded-xl shadow-lg backdrop-blur-sm p-3"
+                  className="absolute bottom-24 right-12 w-32 h-16 bg-paper/90 border border-border/60 rounded-xl shadow-lg backdrop-blur-sm p-3"
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-teal-400" />
-                    <div className="text-xs font-semibold text-slate-700">Job Ready</div>
+                    <div className="text-xs font-semibold text-ink">Job Ready</div>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">2-3 weeks</div>
                 </motion.div>
@@ -472,20 +472,20 @@ export default function RoadmapInputPage() {
                 className="relative"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-violet-100/50 to-blue-100/30 rounded-3xl blur-xl" />
-                <div className="relative rounded-3xl border border-white/80 bg-white/90 p-8 shadow-xl backdrop-blur-sm">
+                <div className="relative rounded-3xl border border-border/60 bg-paper/80 p-8 shadow-xl backdrop-blur-sm">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-2 h-2 rounded-full bg-violet-500" />
                     <span className="text-xs font-bold uppercase tracking-wider text-violet-600">The Problem</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  <h3 className="text-2xl font-bold text-ink mb-4">
                     Most developers quit because they learn randomly
                   </h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     Without a clear path, 73% of aspiring developers give up within 6 months. 
                     They jump between tutorials, frameworks, and concepts without understanding 
                     how everything connects.
                   </p>
-                  <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
+                  <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
                     <CheckCircle2 className="w-4 h-4 text-teal-500" />
                     Our AI solves this with skill-ordered learning
                   </div>
@@ -501,20 +501,20 @@ export default function RoadmapInputPage() {
                 className="relative"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-100/50 to-teal-100/30 rounded-3xl blur-xl" />
-                <div className="relative rounded-3xl border border-white/80 bg-white/90 p-8 shadow-xl backdrop-blur-sm">
+                <div className="relative rounded-3xl border border-border/60 bg-paper/80 p-8 shadow-xl backdrop-blur-sm">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-2 h-2 rounded-full bg-blue-500" />
                     <span className="text-xs font-bold uppercase tracking-wider text-blue-600">The Solution</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  <h3 className="text-2xl font-bold text-ink mb-4">
                     Every milestone builds on the previous one
                   </h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     Our AI analyzes thousands of successful developer journeys to create 
                     the optimal learning sequence. Each skill unlocks naturally from the last, 
                     creating momentum instead of confusion.
                   </p>
-                  <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
+                  <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
                     <Sparkles className="w-4 h-4 text-amber-500" />
                     Personalized to your current level
                   </div>
@@ -530,20 +530,20 @@ export default function RoadmapInputPage() {
                 className="relative"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-teal-100/50 to-amber-100/30 rounded-3xl blur-xl" />
-                <div className="relative rounded-3xl border border-white/80 bg-white/90 p-8 shadow-xl backdrop-blur-sm">
+                <div className="relative rounded-3xl border border-border/60 bg-paper/80 p-8 shadow-xl backdrop-blur-sm">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-2 h-2 rounded-full bg-teal-500" />
                     <span className="text-xs font-bold uppercase tracking-wider text-teal-600">The Result</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  <h3 className="text-2xl font-bold text-ink mb-4">
                     Projects unlock only after foundations are complete
                   </h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     No more tutorial hell. No more imposter syndrome. Each project phase 
                     builds confidence because you have the exact skills needed to succeed. 
                     Real portfolio pieces, not toy examples.
                   </p>
-                  <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
+                  <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
                     <BriefcaseBusiness className="w-4 h-4 text-violet-500" />
                     Ready for real job interviews
                   </div>
@@ -562,7 +562,7 @@ export default function RoadmapInputPage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-violet-100/40 via-blue-100/30 to-teal-100/40 rounded-3xl blur-2xl scale-110" />
                 
                 {/* Main roadmap container */}
-                <div className="relative rounded-3xl border border-white/60 bg-white/50 backdrop-blur-xl p-8 shadow-2xl">
+                <div className="relative rounded-3xl border border-border/40 bg-paper/50 backdrop-blur-xl p-8 shadow-2xl">
                   
                   {/* Animated flowing roadmap line */}
                   <div className="absolute left-12 top-16 bottom-16 w-1 overflow-hidden rounded-full">
@@ -619,16 +619,16 @@ export default function RoadmapInputPage() {
                           <motion.div
                             whileHover={{ y: -2, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
                             transition={{ duration: 0.2 }}
-                            className="flex-1 rounded-2xl border border-white/80 bg-white/90 p-6 shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-200"
+                            className="flex-1 rounded-2xl border border-border/60 bg-paper/80 p-6 shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-200"
                           >
                             <div className="flex items-start justify-between gap-4 mb-3">
-                              <h4 className="text-xl font-bold text-slate-900">{milestone.title}</h4>
+                              <h4 className="text-xl font-bold text-ink">{milestone.title}</h4>
                               <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${milestone.difficultyColor}`}>
                                 {milestone.difficulty}
                               </span>
                             </div>
                             
-                            <p className="text-slate-600 leading-relaxed mb-4">
+                            <p className="text-muted-foreground leading-relaxed mb-4">
                               {milestone.description}
                             </p>
                             
@@ -637,7 +637,7 @@ export default function RoadmapInputPage() {
                               {milestone.skills.map((skill) => (
                                 <span
                                   key={skill}
-                                  className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 border border-slate-200"
+                                  className="rounded-lg bg-cream px-3 py-1.5 text-xs font-medium text-ink border border-border"
                                 >
                                   {skill}
                                 </span>
@@ -645,7 +645,7 @@ export default function RoadmapInputPage() {
                             </div>
                             
                             {/* Duration with enhanced styling */}
-                            <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                               <Zap className="h-4 w-4 text-amber-500" />
                               <span>{milestone.duration}</span>
                               <div className="ml-auto flex items-center gap-1">
@@ -689,21 +689,7 @@ export default function RoadmapInputPage() {
       {/* ════════════════════════════════════════════════════════════════════
           PREMIUM ROADMAP BUILDER CTA — Split layout with interactive preview
       ════════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50/30 to-blue-50/20 py-32">
-        {/* Enhanced atmospheric background */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-violet-200/30 via-blue-200/20 to-teal-200/15 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-200/25 via-cyan-200/20 to-violet-200/15 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-br from-teal-200/20 to-blue-200/15 rounded-full blur-3xl" />
-        </div>
-
-        {/* Subtle background grid */}
-        <div className="absolute inset-0 opacity-[0.02]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(148 163 184) 1px, transparent 0)`,
-            backgroundSize: '24px 24px'
-          }} />
-        </div>
+      <section className="relative overflow-hidden py-32">
 
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
@@ -720,7 +706,7 @@ export default function RoadmapInputPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-violet-100/50 via-blue-100/30 to-teal-100/40 rounded-3xl blur-2xl scale-110" />
               
               {/* Main roadmap container */}
-              <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-2xl p-8 overflow-hidden">
+              <div className="relative bg-paper/80 backdrop-blur-xl rounded-3xl border border-border/60 shadow-2xl p-8 overflow-hidden">
                 
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -739,7 +725,7 @@ export default function RoadmapInputPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.3 }}
-                    className="text-xl font-bold text-slate-900"
+                    className="text-xl font-bold text-ink"
                   >
                     Senior Frontend Engineer
                   </motion.h3>
@@ -825,16 +811,16 @@ export default function RoadmapInputPage() {
                         </div>
 
                         {/* Milestone card */}
-                        <div className="flex-1 bg-white/60 backdrop-blur-sm rounded-xl border border-white/80 p-4 shadow-md group-hover:shadow-lg group-hover:bg-white/80 transition-all duration-200">
+                        <div className="flex-1 bg-paper/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-md group-hover:shadow-lg group-hover:bg-paper/80 transition-all duration-200">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-semibold text-slate-900">{milestone.title}</h4>
-                            <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                            <h4 className="font-semibold text-ink">{milestone.title}</h4>
+                            <span className="text-xs font-medium text-muted-foreground bg-cream px-2 py-1 rounded-full border border-border">
                               {milestone.duration}
                             </span>
                           </div>
                           <div className="flex flex-wrap gap-1">
                             {milestone.skills.map((skill) => (
-                              <span key={skill} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                              <span key={skill} className="text-xs bg-cream text-muted-foreground px-2 py-0.5 rounded-full border border-border">
                                 {skill}
                               </span>
                             ))}
@@ -896,7 +882,7 @@ export default function RoadmapInputPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-4xl font-bold tracking-tight text-slate-900 mb-4 lg:text-5xl"
+                  className="text-4xl font-bold tracking-tight text-ink mb-4 lg:text-5xl"
                 >
                   Stop learning{" "}
                   <span className="bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
@@ -909,7 +895,7 @@ export default function RoadmapInputPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.5 }}
-                  className="text-lg text-slate-600 leading-relaxed mb-6"
+                  className="text-lg text-muted-foreground leading-relaxed mb-6"
                 >
                   Our AI organizes every skill in the exact order you need it. 
                   No more tutorial hell. No more wasted months.
@@ -935,7 +921,7 @@ export default function RoadmapInputPage() {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-100 to-blue-100 flex items-center justify-center">
                           <Icon className="w-4 h-4 text-violet-600" />
                         </div>
-                        <span className="text-sm font-medium text-slate-700">{benefit.text}</span>
+                        <span className="text-sm font-medium text-ink">{benefit.text}</span>
                       </div>
                     );
                   })}
@@ -956,11 +942,11 @@ export default function RoadmapInputPage() {
                   <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 rounded-3xl blur-xl scale-105" />
                   
                   {/* Form container */}
-                  <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/80 shadow-2xl p-8">
+                  <div className="relative bg-paper/90 backdrop-blur-xl rounded-3xl border border-border/60 shadow-2xl p-8">
                     <div className="space-y-6">
                       {/* Target role */}
                       <div>
-                        <label htmlFor="target-role" className="mb-3 block text-sm font-semibold text-slate-700">
+                        <label htmlFor="target-role" className="mb-3 block text-sm font-semibold text-ink">
                           What&apos;s your target role?
                         </label>
                         <div className="relative">
@@ -980,11 +966,11 @@ export default function RoadmapInputPage() {
 
                       {/* Current skills */}
                       <div>
-                        <label htmlFor="current-skills" className="mb-2 block text-sm font-semibold text-slate-700">
+                        <label htmlFor="current-skills" className="mb-2 block text-sm font-semibold text-ink">
                           Current Skills{" "}
-                          <span className="text-xs font-normal text-slate-400">(Optional)</span>
+                          <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
                         </label>
-                        <p className="mb-3 text-xs text-slate-500">
+                        <p className="mb-3 text-xs text-muted-foreground">
                           Press Enter after each skill. Leave empty for a beginner-friendly path.
                         </p>
                         <input
@@ -994,7 +980,7 @@ export default function RoadmapInputPage() {
                           onChange={(e) => setSkillInput(e.target.value)}
                           onKeyDown={handleSkillKeyDown}
                           placeholder="e.g. HTML, CSS, JavaScript…"
-                          className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100/50 hover:border-slate-300"
+                          className="h-14 w-full rounded-xl border border-border bg-paper px-4 text-sm text-ink shadow-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100/50 hover:border-border"
                         />
                         {currentSkills.length > 0 && (
                           <motion.div
@@ -1080,3 +1066,4 @@ export default function RoadmapInputPage() {
     </main>
   );
 }
+ 

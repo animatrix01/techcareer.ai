@@ -5,11 +5,11 @@ function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2">
       <Image
-        src="/next career logo only.png"
+        src="/nextcareerlogo.png"
         alt="NextCareer logo"
-        width={28}
-        height={28}
-        className="h-7 w-7 object-contain"
+        width={44}
+        height={44}
+        className="h-11 w-11 object-contain"
       />
       <span className="font-semibold text-base tracking-tight text-ink">
         NextCareer AI
@@ -65,14 +65,6 @@ export function Footer() {
               The AI operating system for your career. Built for students and professionals shipping real careers.
             </p>
             <div className="mt-5 flex gap-2">
-              {["X", "in", "GH", "✦"].map((s) => (
-                <a
-                  key={s}
-                  className="grid h-8 w-8 place-items-center rounded-full border border-border bg-paper text-xs text-muted-foreground hover:text-ink cursor-pointer transition-colors"
-                >
-                  {s}
-                </a>
-              ))}
             </div>
           </div>
           {cols.map(([h, items]) => (
@@ -93,8 +85,8 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-14 flex flex-wrap items-end justify-between gap-4">
-          <div className="font-serif text-[clamp(3rem,10vw,8rem)] leading-none tracking-[-0.04em] text-ink/90">
-            NextCareer<span className="text-indigo">·</span>AI
+          <div className="font-sans font-semibold text-[clamp(2rem,5vw,3.5rem)] leading-none tracking-tight text-ink/80">
+            NextCareer AI
           </div>
           <div className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} · v2.4 · made on Earth

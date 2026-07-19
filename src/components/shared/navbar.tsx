@@ -20,11 +20,11 @@ function BrandLogo() {
   return (
     <span className="flex items-center gap-2">
       <Image
-        src="/next career logo only.png"
+        src="/nextcareerlogo.png"
         alt="NextCareer logo"
-        width={28}
-        height={28}
-        className="h-7 w-7 object-contain"
+        width={44}
+        height={44}
+        className="h-11 w-11 object-contain"
         priority
       />
       <span className="font-semibold text-[15px] tracking-tight text-ink">NextCareer AI</span>
