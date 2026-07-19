@@ -1,10 +1,14 @@
-// Drizzle config for database migrations
+import { defineConfig } from "drizzle-kit";
+import * as dotenv from "dotenv";
 
-export default {
+// Yeh line ensure karegi ki Drizzle .env.local file ko read kare
+dotenv.config({ path: ".env.local" });
+
+export default defineConfig({
   schema: "./src/lib/db/schema.ts",
   out: "./drizzle",
-  driver: "pg",
+  dialect: "postgresql",
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL!,
   },
-};
+});
