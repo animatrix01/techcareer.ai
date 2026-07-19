@@ -1,181 +1,355 @@
 "use client";
 
-import type { DragEvent } from "react";
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { FileUp, Lock } from "lucide-react";
-import { useRouter } from "next/navigation";
-
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { 
+  FileUp, Lock, Sparkles, CheckCircle2, 
+  AlertCircle, Zap, Target, Shield, Brain,
+  Upload, BarChart3, Award
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAnalyzerStore } from "@/stores/useAnalyzerStore";
+import { parseResumeFile, validateResumeText } from "@/lib/utils/file-parser";
+import { AIPrinterMachine } from "@/components/analyzer/AIPrinterMachine";
+import { AnalysisResults } from "@/components/analyzer/AnalysisResults";
 
-const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-export default function AnalyzerDropzonePage() {
-  const router = useRouter();
+export default function PremiumAnalyzerPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showResults, setShowResults] = useState(false);
+  
   const setFileName = useAnalyzerStore((state) => state.setFileName);
+  const setResumeText = useAnalyzerStore((state) => state.setResumeText);
   const setIsScanning = useAnalyzerStore((state) => state.setIsScanning);
 
-  const handleSelectedFiles = (files: FileList | null) => {
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+
+  const handleSelectedFiles = async (files: FileList | null) => {
     const file = files?.[0];
-    if (!file) {
+    if (!file) return;
+    
+    if (file.size > MAX_SIZE) {
+      setUploadError("File size must be under 5MB");
       return;
     }
 
-    if (file.size > MAX_SIZE) {
-      setUploadError("Max 2MB");
+    const validTypes = [
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/pdf'
+    ];
+    
+    if (!validTypes.includes(file.type)) {
+      setUploadError("Please upload a PDF or DOCX file");
       return;
     }
 
     setUploadError("");
-    setFileName(file.name);
-    setIsScanning(true);
-    router.push("/tools/analyzer/scanning");
+    setIsProcessing(true);
+    setUploadProgress(0);
+
+    // Simulate upload progress
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + 10;
+      });
+    }, 200);
+
+    try {
+      const extractedText = await parseResumeFile(file);
+      const validation = validateResumeText(extractedText);
+      
+      if (!validation.valid) {
+        setUploadError(validation.error || "Invalid file content");
+        setIsProcessing(false);
+        clearInterval(progressInterval);
+        return;
+      }
+
+      setUploadProgress(100);
+      setFileName(file.name);
+      setResumeText(extractedText);
+      setIsScanning(true);
+
+      // Show results after animation
+      setTimeout(() => {
+        setShowResults(true);
+      }, 2000);
+
+    } catch (error) {
+      clearInterval(progressInterval);
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "Failed to read file. Please try again."
+      );
+      setIsProcessing(false);
+    }
   };
 
-  const onDrop = (event: DragEvent<HTMLDivElement>) => {
+  const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
     handleSelectedFiles(event.dataTransfer.files);
   };
 
   return (
-    <section className="bg-gradient-to-br from-teal-50 via-purple-50 to-slate-50">
-      <div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-7xl items-center px-4 py-12 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative grid w-full gap-10 overflow-hidden rounded-3xl border border-white/70 bg-white/70 p-6 shadow-xl shadow-teal-900/5 backdrop-blur-xl sm:p-10 lg:grid-cols-[1.05fr_0.95fr]"
-        >
-          <motion.div
-            aria-hidden
-            animate={{ x: [0, 14, 0], y: [0, -10, 0] }}
-            transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-            className="pointer-events-none absolute -left-12 -top-8 h-40 w-40 rounded-full bg-teal-200/35 blur-3xl"
-          />
-          <motion.div
-            aria-hidden
-            animate={{ x: [0, -16, 0], y: [0, 12, 0] }}
-            transition={{ duration: 8.2, repeat: Infinity, ease: "easeInOut" }}
-            className="pointer-events-none absolute -bottom-12 right-10 h-44 w-44 rounded-full bg-violet-200/35 blur-3xl"
-          />
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            className="hidden"
-            onChange={(event) => {
-              handleSelectedFiles(event.target.files);
-            }}
-          />
+    <div ref={containerRef} className="relative min-h-screen overflow-hidden">
+      {/* Global pastel gradient background from globals.css */}
 
-          <div className="flex flex-col justify-center">
-            <p className="text-xs font-semibold tracking-[0.22em] text-teal-700">
-              RESUME CHECKER
-            </p>
-            <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              Is your resume good enough?
-            </h1>
-            <p className="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">
-              Our AI runs crucial checks that hiring systems care about, from ATS
-              compatibility to readability and role relevance.
-            </p>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        className="hidden"
+        onChange={(e) => handleSelectedFiles(e.target.files)}
+      />
 
-            <motion.div
-              role="button"
-              tabIndex={0}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              onClick={() => inputRef.current?.click()}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  inputRef.current?.click();
-                }
-              }}
-              onDragOver={(event) => {
-                event.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={onDrop}
-              className={`mt-8 flex min-h-72 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 text-center transition-all duration-200 ${
-                isDragging
-                  ? "border-teal-500/60 bg-teal-50/70"
-                  : "border-teal-500/30 bg-white/80 hover:border-teal-500/50 hover:shadow-lg hover:shadow-teal-900/5"
-              }`}
-            >
-              <div className="inline-flex size-14 items-center justify-center rounded-2xl bg-white text-teal-700 shadow-md shadow-teal-900/10 ring-1 ring-teal-100">
-                <FileUp className="size-7" aria-hidden />
-              </div>
-              <p className="mt-5 max-w-md text-sm font-medium text-slate-700">
-                Drop your resume here or choose a file. PDF &amp; DOCX only. Max
-                2MB file size.
-              </p>
-              <Button className="mt-5 h-11 rounded-xl bg-teal-600 px-6 text-sm font-semibold text-white hover:bg-teal-500">
-                Upload Your Resume
-              </Button>
-              {uploadError ? (
-                <p className="mt-2 text-center font-medium text-red-500">{uploadError}</p>
-              ) : null}
-              <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-slate-500">
-                <Lock className="size-3.5" aria-hidden />
-                Privacy guaranteed
-              </div>
-            </motion.div>
-          </div>
-
+      <AnimatePresence mode="wait">
+        {!showResults ? (
           <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            whileHover={{ y: -3 }}
-            transition={{ delay: 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex items-center justify-center"
+            key="upload"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.5 }}
+            className="relative"
           >
-            <motion.div
-              aria-hidden
-              animate={{ scale: [1, 1.06, 1], opacity: [0.45, 0.65, 0.45] }}
-              transition={{ duration: 4.6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-teal-200/45 blur-3xl"
-            />
-            <motion.div
-              aria-hidden
-              animate={{ scale: [1, 1.07, 1], opacity: [0.45, 0.65, 0.45] }}
-              transition={{ duration: 5.1, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -right-8 bottom-8 h-44 w-44 rounded-full bg-violet-200/45 blur-3xl"
-            />
-            <div className="relative w-full max-w-md rounded-3xl border border-white/80 bg-white/85 p-5 shadow-xl shadow-teal-900/10 backdrop-blur-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold tracking-tight text-slate-900">
-                  Resume Quality Overview
-                </span>
-                <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700">
-                  Score 46
-                </span>
-              </div>
-              <div className="mt-5 space-y-3">
-                <div className="h-3 w-4/5 rounded-full bg-slate-200" />
-                <div className="h-3 w-full rounded-full bg-slate-100" />
-                <div className="h-24 rounded-2xl bg-gradient-to-br from-teal-100 to-violet-100" />
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl bg-slate-100 p-3">
-                    <div className="h-2.5 w-16 rounded-full bg-slate-300" />
-                    <div className="mt-3 h-9 rounded-xl bg-slate-200" />
-                  </div>
-                  <div className="rounded-2xl bg-slate-100 p-3">
-                    <div className="h-2.5 w-14 rounded-full bg-slate-300" />
-                    <div className="mt-3 h-9 rounded-xl bg-slate-200" />
-                  </div>
-                </div>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                
+                {/* LEFT SIDE - Content */}
+                <motion.div
+                  style={{ opacity, scale }}
+                  className="space-y-8"
+                >
+                  {/* Badge */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo/10 border border-indigo/20"
+                  >
+                    <Sparkles className="w-4 h-4 text-indigo" />
+                    <span className="text-sm font-medium text-indigo">AI-Powered Analysis</span>
+                  </motion.div>
+
+                  {/* Headline */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                  >
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-ink leading-[1.1]">
+                      Get your resume
+                      <br />
+                      <span className="text-indigo">
+                        ATS score
+                      </span>
+                    </h1>
+                    <p className="mt-6 text-lg sm:text-xl text-muted-foreground font-medium leading-relaxed max-w-xl">
+                      Upload your resume and get instant AI-powered feedback. 
+                      Know exactly what recruiters and ATS systems see.
+                    </p>
+                  </motion.div>
+
+                  {/* Stats */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="grid grid-cols-3 gap-6"
+                  >
+                    {[
+                      { icon: Zap, label: "Instant", value: "< 30s" },
+                      { icon: Shield, label: "Secure", value: "100%" },
+                      { icon: Target, label: "Accuracy", value: "94%" }
+                    ].map((stat, i) => (
+                      <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
+                        className="relative group"
+                      >
+                        <div className="tile p-4 transition-all duration-200 group-hover:shadow-float group-hover:-translate-y-2">
+                          <stat.icon className="w-5 h-5 text-indigo mb-2" />
+                          <div className="text-2xl font-bold text-ink">{stat.value}</div>
+                          <div className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{stat.label}</div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  {/* Upload Area */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                  >
+                    <motion.div
+                      role="button"
+                      tabIndex={0}
+                      whileHover={{ scale: 1.01, y: -2 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => !isProcessing && inputRef.current?.click()}
+                      onKeyDown={(e) => {
+                        if ((e.key === "Enter" || e.key === " ") && !isProcessing) {
+                          e.preventDefault();
+                          inputRef.current?.click();
+                        }
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={onDrop}
+                      className={`tile overflow-hidden cursor-pointer transition-all duration-300 ${
+                        isDragging
+                          ? "border-indigo/40 bg-indigo/5 shadow-float scale-[1.02]"
+                          : "hover:shadow-float hover:-translate-y-1"
+                      } ${isProcessing ? "pointer-events-none" : ""}`}
+                    >
+                      
+                      <div className="relative p-12 text-center">
+                        <motion.div
+                          animate={isDragging ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo to-indigo/80 text-white shadow-soft mb-6"
+                        >
+                          <FileUp className="w-10 h-10" />
+                        </motion.div>
+
+                        {!isProcessing ? (
+                          <>
+                            <h3 className="text-xl font-serif font-bold text-ink mb-2">
+                              Drop your resume here
+                            </h3>
+                            <p className="text-muted-foreground font-medium mb-6">
+                              or click to browse • PDF or DOCX • Max 5MB
+                            </p>
+                            <button className="btn-primary">
+                              <Upload className="w-4 h-4" />
+                              Choose File
+                            </button>
+                          </>
+                        ) : (
+                          <div className="space-y-4">
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="inline-flex items-center gap-3 text-indigo"
+                            >
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                              >
+                                <Brain className="w-8 h-8" />
+                              </motion.div>
+                              <span className="text-lg font-semibold">Analyzing with AI...</span>
+                            </motion.div>
+                            
+                            {/* Progress bar */}
+                            <div className="w-full max-w-md mx-auto">
+                              <div className="h-3 bg-muted rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full bg-gradient-to-r from-indigo to-sky"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${uploadProgress}%` }}
+                                  transition={{ duration: 0.3 }}
+                                />
+                              </div>
+                              <p className="text-sm text-muted-foreground font-mono mt-2">{uploadProgress}% complete</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {uploadError && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex items-center justify-center gap-2 text-destructive"
+                          >
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-sm font-semibold">{uploadError}</span>
+                          </motion.div>
+                        )}
+                      </div>
+                    </motion.div>
+
+                    {/* Privacy badge */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground font-medium"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>Your resume is private and secure</span>
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Features list */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    className="grid sm:grid-cols-2 gap-4"
+                  >
+                    {[
+                      { icon: CheckCircle2, text: "ATS compatibility check" },
+                      { icon: Target, text: "Keyword optimization" },
+                      { icon: BarChart3, text: "Readability score" },
+                      { icon: Award, text: "Industry benchmarks" }
+                    ].map((feature, i) => (
+                      <motion.div
+                        key={feature.text}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.6 + i * 0.1 }}
+                        className="flex items-center gap-3"
+                      >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-indigo to-indigo/80 flex items-center justify-center shadow-soft">
+                          <feature.icon className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-sm font-medium text-ink">{feature.text}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </motion.div>
+
+                {/* RIGHT SIDE - 3D Printer Machine */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="relative"
+                >
+                  <AIPrinterMachine isProcessing={isProcessing} progress={uploadProgress} />
+                </motion.div>
               </div>
             </div>
           </motion.div>
-        </motion.div>
-      </div>
-    </section>
+        ) : (
+          <AnalysisResults />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

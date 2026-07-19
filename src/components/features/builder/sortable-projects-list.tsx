@@ -84,9 +84,9 @@ function SortableProjectCard({ id }: { id: string }) {
             <Label htmlFor={`purl-${id}`}>Link</Label>
             <Input
               id={`purl-${id}`}
-              value={project.url}
+              value={project.liveUrl}
               onChange={(e) =>
-                updateProject(id, { url: e.target.value })
+                updateProject(id, { liveUrl: e.target.value })
               }
               placeholder="https://github.com/you/project"
               className="bg-zinc-950/80"
@@ -96,9 +96,9 @@ function SortableProjectCard({ id }: { id: string }) {
             <Label htmlFor={`pstack-${id}`}>Stack (comma-separated)</Label>
             <Input
               id={`pstack-${id}`}
-              value={project.stack}
+              value={project.techStack}
               onChange={(e) =>
-                updateProject(id, { stack: e.target.value })
+                updateProject(id, { techStack: e.target.value })
               }
               placeholder="TypeScript, Next.js, PostgreSQL"
               className="bg-zinc-950/80"

@@ -32,6 +32,14 @@ export async function POST(req: Request) {
     return new Response("Error occured -- no svix headers", { status: 400 });
   }
 
+  // ── Replay attack protection ──────────────────────────────────────────────
+  // Reject webhooks older than 5 minutes to prevent captured payloads
+  // being replayed later to create duplicate or fraudulent user records.
+  const webhookAgeSeconds = Math.abs(Date.now() / 1000 - parseInt(svixTimestamp, 10));
+  if (webhookAgeSeconds > 300) {
+    return new Response("Webhook timestamp too old", { status: 400 });
+  }
+
   const payload = await req.text();
   const wh = new Webhook(WEBHOOK_SECRET);
 

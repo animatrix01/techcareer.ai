@@ -4,6 +4,8 @@ export const BUILDER_STEPS = [
   "experience",
   "education",
   "skills",
+  "certifications",
+  "projects",
 ] as const;
 
 export type BuilderStep = (typeof BUILDER_STEPS)[number];
@@ -14,6 +16,8 @@ export const BUILDER_STEP_LABELS: Record<BuilderStep, string> = {
   experience: "Experience",
   education: "Education",
   skills: "Skills",
+  certifications: "Certifications",
+  projects: "Projects",
 };
 
 export function isBuilderStep(value: string): value is BuilderStep {

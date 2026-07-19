@@ -26,24 +26,37 @@ export const resumes = pgTable("resumes", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   resumeId: text("resume_id").notNull().unique(),
-  userEmail: text("user_email").notNull(),
-  createdBy: text("created_by")
-    .references(() => users.clerkUserId)
-    .notNull(),
+  createdBy: text("created_by").notNull(),
   userName: text("user_name"),
-  themeColor: text("theme_color").default("#3b82f6"),
+  template: text("template").default("modern"),
+  themeColor: text("theme_color").default("#1a2e35"),
+  basics: jsonb("basics").$type<{
+    fullName: string;
+    jobTitle: string;
+    email: string;
+    phone: string;
+    location: string;
+    summary: string;
+  }>(),
   summary: text("summary"),
   experience: jsonb("experience"),
   education: jsonb("education"),
   skills: jsonb("skills"),
+  projects: jsonb("projects"),
+  certifications: jsonb("certifications"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const roadmaps = pgTable("roadmaps", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
+  clerkUserId: text("clerk_user_id").notNull(),
+  targetRole: text("target_role").notNull(),
+  currentSkills: jsonb("current_skills").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
   roadmapJson: jsonb("roadmap_json")
     .$type<Record<string, unknown>>()
     .notNull()
