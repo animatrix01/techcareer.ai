@@ -56,10 +56,7 @@ export default function Page() {
             <SignUp
               fallbackRedirectUrl="/dashboard"
               appearance={{
-                layout: {
-                  socialButtonsPlacement: "top",
-                  socialButtonsVariant: "blockButton",
-                },
+                // Yahan se 'layout' hata diya gaya hai
                 elements: {
                   rootBox: "w-full",
                   cardBox: "w-full shadow-none",
