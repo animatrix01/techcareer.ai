@@ -1,6 +1,8 @@
 import { MapIcon } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 import { getUserResumes } from "@/actions/resume";
 import { getUserRoadmaps } from "@/actions/roadmap";
 import { CreateResumeButton } from "./components/CreateResumeButton";

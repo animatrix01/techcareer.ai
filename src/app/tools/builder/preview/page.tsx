@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PreviewToolbar } from "@/components/features/preview/PreviewToolbar";
 import { ResumePreview } from "@/components/features/builder/resume-preview";
@@ -9,7 +9,7 @@ import { getResumeById } from "@/actions/resume";
 
 type ZoomLevel = 50 | 75 | 90 | 100 | 110 | 125 | 150;
 
-export default function PreviewPage() {
+function PreviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const resumeId = searchParams.get("resumeId");
@@ -211,5 +211,13 @@ export default function PreviewPage() {
         }
       `}</style>
     </>
+  );
+}
+
+export default function PreviewPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading preview...</div>}>
+      <PreviewContent />
+    </Suspense>
   );
 }

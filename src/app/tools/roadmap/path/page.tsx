@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -64,7 +64,7 @@ function getPhaseRing(index: number) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function RoadmapPathPage() {
+function RoadmapContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const roadmapId = searchParams.get("id");
@@ -362,5 +362,13 @@ export default function RoadmapPathPage() {
         </motion.div>
       </div>
     </main>
+  );
+}
+
+export default function RoadmapPathPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen w-full" />}>
+      <RoadmapContent />
+    </Suspense>
   );
 }

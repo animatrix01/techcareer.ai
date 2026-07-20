@@ -98,10 +98,13 @@ export default function RotatingText({
                 initial={initial}
                 animate={animate}
                 exit={exit}
-                transition={{
-                  ...transition,
-                  delay: getStaggerDelay(index, textParts.length),
-                }}
+                // Yahan par 'as any' lagaya hai error bypass karne ke liye
+                transition={
+                  {
+                    ...transition,
+                    delay: getStaggerDelay(index, textParts.length),
+                  } as any
+                }
                 className="inline-block"
               >
                 {part === " " ? "\u00A0" : part}
