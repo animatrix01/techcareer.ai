@@ -56,10 +56,7 @@ export default function Page() {
             <SignIn
               fallbackRedirectUrl="/dashboard"
               appearance={{
-                layout: {
-                  socialButtonsPlacement: "top",
-                  socialButtonsVariant: "blockButton",
-                },
+                // Yahan se 'layout' wala block hata diya gaya hai taaki TypeScript error na de
                 elements: {
                   rootBox: "w-full",
                   cardBox: "w-full shadow-none",
